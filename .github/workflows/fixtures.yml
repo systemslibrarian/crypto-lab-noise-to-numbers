@@ -1,0 +1,105 @@
+name: Independent fixture check
+
+# THE CHECK THAT MAKES THE LAB'S NUMBERS CHECKABLE.
+#
+# It builds the pinned NIST SP 800-90B assessment tool FROM SOURCE, regenerates
+# every fixture from the generator in this repository, and reruns every
+# recorded command — then fails on any disagreement with the manifest. That
+# checks FIXTURE GENERATION, not just table-vs-fixture agreement: a generator
+# that drifted from the file it supposedly produces, or an estimator whose
+# value moved after a tool change, is caught here and nowhere else.
+#
+# WHY IT IS ITS OWN WORKFLOW. It needs a C++ toolchain and four system
+# libraries that the Pages deploy has no use for. Measured end to end it is
+# about three minutes — a minute of apt, thirty seconds to compile, and under a
+# minute for the nine assessments — so it is NOT prohibitive and runs on every
+# push and pull request rather than on a schedule alone. The weekly schedule is
+# there for the other direction: the pinned tool is a separate repository, and
+# a weekly run notices if what it produces stops matching what is recorded here
+# even when nothing in this repository changed.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    # Mondays, 06:17 UTC. Off the hour on purpose: the hour is when every
+    # scheduled job in the world queues at once.
+    - cron: '17 6 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: lab
+
+      # The exact commit the manifest records. Read from the manifest rather
+      # than written here, so there is one place the pin lives and the check
+      # cannot drift from the thing it is checking.
+      - name: Read the pinned tool commit from the manifest
+        id: pin
+        run: |
+          commit=$(node -e "
+            const m = require('./lab/fixtures/manifest.json');
+            const c = [...new Set(m.fixtures.filter(f => f.assessment).map(f => f.assessment.tool.forkCommit))];
+            if (c.length !== 1) { console.error('manifest names ' + c.length + ' tool commits: ' + c.join(', ')); process.exit(1); }
+            process.stdout.write(c[0]);
+          ")
+          echo "commit=$commit" >> "$GITHUB_OUTPUT"
+          echo "pinned tool commit: $commit"
+
+      - name: Check out the pinned assessment tool
+        uses: actions/checkout@v7
+        with:
+          repository: systemslibrarian/SP800-90B_EntropyAssessment
+          ref: ${{ steps.pin.outputs.commit }}
+          path: tool
+
+      - name: Install the tool's build dependencies
+        run: |
+          sudo apt-get update
+          # From the fork's own build files, not from memory: jsoncpp for the
+          # JSON report, libdivsufsort for the t-tuple and LRS suffix arrays,
+          # OpenSSL for the input file's SHA-256, bzip2 on the link line.
+          # OpenMP comes with GCC on Linux, so no libomp here.
+          sudo apt-get install -y --no-install-recommends \
+            build-essential libjsoncpp-dev libdivsufsort-dev libssl-dev libbz2-dev
+
+      - name: Build ea_non_iid
+        working-directory: tool/cpp
+        run: |
+          # `make non_iid`, never the `all` target: `all` also builds
+          # ea_conditioning, the one program that links GNU MPFR and GMP.
+          # ARCH=x86 is upstream's default and the runner is x86-64.
+          make non_iid
+          ./ea_non_iid --help 2>&1 | head -3 || true
+
+      - name: The tool reproduces upstream's own pinned figure
+        working-directory: tool/cpp/selftest
+        # Before trusting this build to judge our fixtures, check it against
+        # NIST's own sample and reference value. `--prove-nonvacuous` also
+        # perturbs the input and requires the check to FAIL, so a pin that
+        # passes everything is caught.
+        run: ./pin-check.sh --prove-nonvacuous
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: lab/package-lock.json
+
+      - name: Install
+        working-directory: lab
+        run: npm ci
+
+      - name: Regenerate every fixture and re-measure every figure
+        working-directory: lab
+        run: node scripts/verify-fixtures.ts --tool ../tool/cpp/ea_non_iid

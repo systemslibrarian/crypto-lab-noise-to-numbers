@@ -1,0 +1,14 @@
+node_modules
+dist
+.DS_Store
+*.local
+playwright-report
+test-results
+chat.md
+.tool-cache
+
+# The catalog's master template. Kept on disk, out of the repo, for the reason
+# the template itself gives for chat.md: a committed snapshot of a shared
+# document ages silently into a second, wrong copy of it. The canonical one is
+# audits/_MASTER-TEMPLATE.md in the crypto-lab catalog repo.
+_MASTER-TEMPLATE.md

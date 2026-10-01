@@ -1,0 +1,454 @@
+/* ───────────────────────────────────────────────────────────────────────────
+   Noise to Numbers — theme and components.
+
+   Dark is the only theme (§3.2). The palette lives under a bare `:root`, there
+   is no `prefers-color-scheme` anywhere, and there is no toggle.
+
+   COLOUR NEVER CARRIES STATE ALONE. Every verdict, badge, warning and
+   provenance mark pairs its colour with an icon AND a word (WCAG 1.4.1), and
+   each tone has a dedicated ink token measured against its own fill rather
+   than a near-white borrowed from the page.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* The lab's accent. Verified unused across the 223-repo fleet, and distinct
+     from every RANDOMNESS neighbour (#a78bfa vdf, #6154dc quantum-entropy,
+     #a16207 entropy-collapse, #6ea8fe otp-vault). Warm, for thermal noise. */
+  --accent: #ff7043;
+  --accent-ink: #1a0b05; /* on an --accent fill */
+
+  --bg: #0d1117;
+  --bg-raised: #161b22;
+  --surface: #1a2029;
+  --surface-2: #212936;
+  --border: #30363d;
+  /* WCAG 1.4.11: a control's boundary is its only edge when it has no fill, so
+     it must clear 3:1 against whatever it sits on. Measured by the gate's own
+     arithmetic walk, the previous #4a5568 gave 2.51:1 on `.tab-btn` and 2.30:1
+     on `.btn`. This value clears it against all three surfaces a bordered
+     control appears on: 4.04:1 on --surface, 3.61:1 on --surface-2, 4.27:1 on
+     --bg-raised. */
+  --border-strong: #767f8c;
+
+  --text: #e8eef5;
+  --text-dim: #b8c2cf;
+  --text-muted: #9aa5b1;
+
+  /* Verdict tones. Each has its own ink. Lightness, never opacity, is what
+     makes a muted variant here. */
+  --ok: #4ec9a0;
+  --ok-ink: #04130d;
+  --warn: #e3a008;
+  --warn-ink: #1a1200;
+  --bad: #f87171;
+  --bad-ink: #1c0505;
+  --info: #7cc5ff;
+  --info-ink: #05121c;
+
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+
+/* `<html>` gets its own background-color LONGHAND (axe and WebKit miss the
+   shorthand), plus a color-scheme so form controls render dark. */
+html {
+  background-color: var(--bg);
+  color-scheme: dark;
+}
+
+/* Border-box everywhere.
+   Without this, any element given `width: 100%` AND horizontal padding is
+   wider than its container by exactly that padding. The hero's "Why it
+   matters" box is that shape at phone width — `width:100%` plus 1.05rem of
+   side padding made it 383.6px inside a 348px column — and because the
+   overflow enlarges the scroll area, the sibling title block then re-resolved
+   its own available width against the enlarged box and overflowed too. One
+   missing reset, two elements off the side of the screen, and a WCAG 1.4.10
+   reflow failure that reads as a hero bug. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* THE `[hidden]` CASCADE TRAP, closed.
+   The UA stylesheet's rule is a bare `[hidden]` attribute selector, specificity
+   (0,1,0) — exactly the same as any class. So `.progress-row{display:flex}`,
+   declared later in this file, WINS, and an element the code believes it hid
+   keeps painting and keeps being announced. The a11y gate caught precisely
+   that on `#analyse-progress`. Toggling `el.hidden` is the pattern this lab
+   uses throughout, so the rule is made unconditional here rather than fixed
+   one component at a time. */
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+/* Base element rules are scoped to #app so they cannot fight the always-dark
+   shared top bar, which is self-contained (§4.2). */
+#app {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 3vw, 2rem) 3rem;
+}
+#app p { margin: 0 0 0.8rem; }
+#app h2 { font-size: clamp(1.1rem, 2.2vw, 1.4rem); margin: 0 0 0.6rem; line-height: 1.25; }
+#app h3 { font-size: 1.02rem; margin: 1.4rem 0 0.5rem; }
+#app h4 { font-size: 0.92rem; margin: 1rem 0 0.4rem; letter-spacing: 0.02em; }
+#app code, #app kbd, #app samp { font-family: var(--mono); font-size: 0.92em; }
+
+/* Inline links carry a persistent underline, not colour alone (§4.2). */
+#app a {
+  color: var(--info);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+#app a:hover { color: var(--text); }
+#app :focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── The standardized hero (§3.1) ─────────────────────────────────────────── */
+.cl-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:clamp(1rem,4vw,3rem);flex-wrap:wrap;margin:clamp(1rem,3vw,2rem) 0 1.5rem;}
+.cl-hero-main{flex:1 1 22rem;min-width:min(100%,20rem);}
+.cl-hero-title{margin:0;font-size:clamp(1.6rem,3.8vw,2.7rem);font-weight:700;line-height:1.1;letter-spacing:.01em;}
+.cl-hero-sub{margin:.4rem 0 0;font-size:clamp(.9rem,1.6vw,1.05rem);letter-spacing:.01em;color:var(--text-dim);}
+.cl-hero-desc{margin:.55rem 0 0;font-size:1rem;line-height:1.5;color:var(--text-dim);max-width:60ch;}
+.cl-hero-why{flex:0 1 min(40%,26rem);min-width:min(100%,15rem);border:1px solid var(--border-strong);border-radius:10px;padding:.85rem 1.05rem;background:color-mix(in oklab,var(--accent) 6%,var(--bg-raised));}
+.cl-hero-why-label{display:block;font-size:.68rem;font-weight:700;letter-spacing:.14em;color:var(--accent);}
+.cl-hero-why-text{margin:.35rem 0 0;font-size:.95rem;line-height:1.5;color:var(--text-dim);}
+@media (max-width:640px){.cl-hero{flex-direction:column;}.cl-hero-why{flex-basis:auto;width:100%;}}
+
+/* ── Tabs ─────────────────────────────────────────────────────────────────── */
+.tabs { margin: 1.2rem 0 1rem; }
+.tab-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.tab-btn {
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0.5rem 0.8rem;
+  min-height: 2.4rem;
+  border-radius: 8px;
+  /* A visible boundary in BOTH states: the unselected button draws its edge
+     from --border-strong rather than dissolving into the card, which is the
+     1.4.11 defect most of this fleet carries. */
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-dim);
+  cursor: pointer;
+}
+.tab-btn:hover { background: var(--surface-2); color: var(--text); border-color: var(--text-muted); }
+.tab-btn[aria-selected='true'] {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent-ink);
+}
+
+/* ── Panels and cards ─────────────────────────────────────────────────────── */
+.panel { padding-top: 0.5rem; }
+.card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-raised);
+  padding: 1rem 1.1rem;
+  margin: 0 0 1rem;
+}
+.card > h2:first-child, .card > h3:first-child { margin-top: 0; }
+
+/* The plain-language on-ramp. Every act opens with one. */
+.onramp {
+  border: 1px solid var(--border-strong);
+  border-left: 4px solid var(--accent);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 0.9rem 1.05rem;
+  margin: 0 0 1.1rem;
+}
+.onramp p:last-child { margin-bottom: 0; }
+.onramp .jargon {
+  border-bottom: 1px dotted var(--accent);
+  cursor: help;
+}
+
+.note {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin: 0.4rem 0 0;
+}
+
+/* ── Labels: provenance, partial, exploratory, not-run, never-a-secret ────── */
+/* Each is icon + text + colour. The icon is `aria-hidden` because the word
+   beside it already says the same thing to a screen reader. */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.22rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid currentColor;
+  white-space: nowrap;
+}
+.badge-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 0.7rem; }
+
+/* Provenance classes are visually DISTINCT from one another, and not by hue
+   alone: each carries its own glyph and its own word (invariant I3). */
+.badge-simulated { color: var(--info); background: color-mix(in oklab, var(--info) 12%, var(--bg-raised)); }
+.badge-deterministic { color: var(--warn); background: color-mix(in oklab, var(--warn) 12%, var(--bg-raised)); }
+.badge-captured { color: var(--ok); background: color-mix(in oklab, var(--ok) 12%, var(--bg-raised)); }
+.badge-modified { color: var(--bad); background: color-mix(in oklab, var(--bad) 12%, var(--bg-raised)); }
+.badge-partial { color: var(--warn); background: color-mix(in oklab, var(--warn) 14%, var(--bg-raised)); }
+.badge-exploratory { color: var(--warn); background: color-mix(in oklab, var(--warn) 14%, var(--bg-raised)); }
+.badge-notrun { color: var(--text-dim); background: var(--surface-2); }
+.badge-public { color: var(--text-dim); background: var(--surface-2); }
+
+/* ── Verdicts ─────────────────────────────────────────────────────────────── */
+.verdict {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-weight: 600;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid currentColor;
+  margin: 0.6rem 0;
+}
+.verdict-ok { color: var(--ok); background: color-mix(in oklab, var(--ok) 10%, var(--bg-raised)); }
+.verdict-warn { color: var(--warn); background: color-mix(in oklab, var(--warn) 10%, var(--bg-raised)); }
+.verdict-bad { color: var(--bad); background: color-mix(in oklab, var(--bad) 10%, var(--bg-raised)); }
+.verdict-info { color: var(--info); background: color-mix(in oklab, var(--info) 10%, var(--bg-raised)); }
+.verdict-text { color: var(--text); font-weight: 500; }
+.verdict strong { color: inherit; }
+
+/* ── Tables ───────────────────────────────────────────────────────────────── */
+.table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+table { border-collapse: collapse; width: 100%; font-size: 0.86rem; }
+caption {
+  caption-side: top;
+  text-align: left;
+  padding: 0.6rem 0.7rem;
+  font-size: 0.86rem;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+}
+th, td { padding: 0.45rem 0.7rem; text-align: left; border-bottom: 1px solid var(--border); }
+thead th { background: var(--surface-2); color: var(--text); font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; }
+tbody tr:last-child td { border-bottom: none; }
+td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.binding td { background: color-mix(in oklab, var(--accent) 12%, var(--bg-raised)); }
+.moved-down { color: var(--bad); }
+.moved-up { color: var(--ok); }
+.moved-flat { color: var(--text-muted); }
+
+/* ── Figures: a value with its unit, never a bare number ──────────────────── */
+.figure-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.7rem;
+  margin: 0.8rem 0;
+}
+.figure {
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  padding: 0.7rem 0.85rem;
+  background: var(--surface);
+}
+.figure-label { display: block; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+.figure-value { display: block; font-family: var(--mono); font-size: 1.3rem; font-weight: 700; margin: 0.2rem 0 0; color: var(--text); }
+.figure-unit { display: block; font-size: 0.78rem; color: var(--text-dim); }
+.figure-none .figure-value { font-size: 1rem; color: var(--text-dim); }
+
+/* ── Controls ─────────────────────────────────────────────────────────────── */
+.controls { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: flex-end; margin: 0.6rem 0 0.9rem; }
+/* Every control in a row must be able to shrink below its intrinsic width, or
+   one of them takes the page off the side of a phone. A native
+   `<input type="file">` is the worst offender — its min-content width is the
+   render button plus the whole filename, 434px here — and a flex item's
+   automatic minimum size is its min-content unless `min-width` says otherwise.
+   WCAG 1.4.10. */
+.controls > * { min-width: 0; max-width: 100%; }
+.field { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; max-width: 100%; }
+#app input[type='file'] {
+  max-width: 100%;
+  font-size: 0.82rem;
+  color: var(--text);
+  padding: 0.35rem 0;
+}
+.field label { font-size: 0.78rem; letter-spacing: 0.04em; color: var(--text-dim); }
+#app select, #app input[type='text'], #app input[type='number'], #app textarea {
+  font: inherit;
+  font-family: var(--mono);
+  font-size: 0.86rem;
+  padding: 0.45rem 0.6rem;
+  min-height: 2.4rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+}
+/* A styled select needs appearance:none plus a custom chevron (§4.2). */
+#app select {
+  appearance: none;
+  padding-right: 2rem;
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-dim) 50%),
+    linear-gradient(135deg, var(--text-dim) 50%, transparent 50%);
+  background-position: calc(100% - 1.05rem) 1.08rem, calc(100% - 0.65rem) 1.08rem;
+  background-size: 0.4rem 0.4rem, 0.4rem 0.4rem;
+  background-repeat: no-repeat;
+}
+#app textarea { font-size: 0.82rem; line-height: 1.5; width: 100%; }
+#app input[aria-invalid='true'], #app textarea[aria-invalid='true'] { border-color: var(--bad); }
+
+.btn {
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.5rem 0.9rem;
+  min-height: 2.4rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+.btn:hover { background: var(--surface-2); border-color: var(--text-muted); }
+.btn-primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent-ink); }
+.btn-primary:hover { background: color-mix(in oklab, var(--accent) 85%, #fff); border-color: var(--accent-ink); }
+.btn:disabled { color: var(--text-muted); cursor: not-allowed; background: var(--surface); border-color: var(--border); }
+
+/* ── Progress ─────────────────────────────────────────────────────────────── */
+.progress-row { display: flex; align-items: center; gap: 0.6rem; margin: 0.5rem 0; }
+.progress-track { flex: 1 1 8rem; height: 0.5rem; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border-strong); overflow: hidden; }
+.progress-fill { height: 100%; background: var(--accent); width: 0; }
+.progress-pct { font-family: var(--mono); font-size: 0.8rem; color: var(--text-dim); min-width: 3.2rem; text-align: right; }
+
+/* ── Hex and byte views ───────────────────────────────────────────────────── */
+.hex {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  padding: 0.6rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-dim);
+  white-space: pre;
+  margin: 0.5rem 0;
+}
+
+/* ── The circuit stepper (Act 1) ──────────────────────────────────────────── */
+.loop-stage { display: grid; gap: 0.7rem; margin: 0.8rem 0; }
+.loop-bar {
+  position: relative;
+  height: 2.6rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.loop-threshold {
+  position: absolute;
+  top: -0.3rem;
+  bottom: -0.3rem;
+  width: 2px;
+  background: var(--warn);
+}
+.loop-marker {
+  position: absolute;
+  top: 0.35rem;
+  width: 0.7rem;
+  height: 1.9rem;
+  border-radius: 3px;
+  background: var(--accent);
+  border: 1px solid var(--accent-ink);
+  /* Moves only in response to a step the reader took. No idle motion. */
+  transition: left 0.18s ease-out;
+}
+.loop-axis { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.72rem; color: var(--text-muted); }
+.loop-bits { font-family: var(--mono); font-size: 0.95rem; letter-spacing: 0.18em; word-break: break-all; color: var(--text); min-height: 1.5rem; }
+
+/* ── The conditioning ledger (Act 5) ──────────────────────────────────────── */
+/* Two bars, drawn to the SAME scale, so the picture can never imply that
+   conditioning increased entropy: the entropy bar does not move when the
+   output bar grows. */
+.ledger { display: grid; gap: 0.9rem; margin: 0.9rem 0; }
+.ledger-row { display: grid; grid-template-columns: minmax(7rem, auto) 1fr minmax(8rem, auto); gap: 0.6rem; align-items: center; }
+.ledger-label { font-size: 0.82rem; color: var(--text-dim); }
+.ledger-track { height: 1.5rem; border: 1px solid var(--border-strong); border-radius: 6px; background: var(--surface); overflow: hidden; }
+.ledger-fill { height: 100%; transition: width 0.2s ease-out; }
+.ledger-fill-out { background: color-mix(in oklab, var(--info) 55%, var(--bg)); }
+.ledger-fill-entropy { background: color-mix(in oklab, var(--accent) 70%, var(--bg)); }
+.ledger-value { font-family: var(--mono); font-size: 0.84rem; color: var(--text); text-align: right; font-variant-numeric: tabular-nums; }
+@media (max-width: 560px) { .ledger-row { grid-template-columns: 1fr; } .ledger-value { text-align: left; } }
+
+/* ── Honesty panel ────────────────────────────────────────────────────────── */
+.honesty {
+  margin: 2rem 0 1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 1rem 1.1rem;
+}
+.honesty-list { margin: 0; padding: 0 0 0 1.1rem; }
+.honesty-list li { margin: 0 0 0.5rem; color: var(--text-dim); }
+.honesty-list li:last-child { margin-bottom: 0; }
+
+/* ── Disclosures ──────────────────────────────────────────────────────────── */
+details {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 0.5rem 0.7rem;
+  margin: 0.6rem 0;
+}
+summary { cursor: pointer; font-size: 0.86rem; font-weight: 600; color: var(--text); }
+summary::marker { color: var(--accent); }
+details > *:not(summary) { margin-top: 0.6rem; }
+
+dl.kv { display: grid; grid-template-columns: minmax(9rem, auto) 1fr; gap: 0.3rem 0.8rem; margin: 0.5rem 0; font-size: 0.85rem; }
+dl.kv dt { color: var(--text-muted); }
+dl.kv dd { margin: 0; color: var(--text-dim); font-family: var(--mono); font-size: 0.82rem; overflow-wrap: anywhere; }
+
+/* ── Scripture footer (§3.3) ──────────────────────────────────────────────── */
+.scripture-footer {
+  margin-top: 2.5rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--border);
+}
+.scripture-footer p { margin: 0; font-size: 0.86rem; color: var(--text-muted); font-style: italic; }
+
+/* Motion is only ever a response to an action here, and there is no idle or
+   looping animation anywhere. The two transitions that exist (the loop marker
+   and the ledger bars) are cancelled for a reduced-motion reader, and because
+   both elements are positioned by inline style rather than parked at an
+   animation's start state, cancelling them restores nothing and hides nothing. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

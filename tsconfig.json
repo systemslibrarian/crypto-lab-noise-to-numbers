@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable", "WebWorker"],
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    // The generator scripts run the SAME modules the browser does, via Node's
+    // native type stripping (`node script.ts`). Stripping only handles erasable
+    // syntax, so a parameter property or an enum added here would break the
+    // fixture pipeline at a distance. tsc refuses them instead.
+    "erasableSyntaxOnly": true,
+    // The scripts import each other and src/ with explicit .ts extensions,
+    // which is what Node's resolver needs when it runs them directly.
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "types": ["vite/client", "node"]
+  },
+  "include": ["src", "e2e", "scripts", "vite.config.ts", "playwright.config.ts"]
+}
