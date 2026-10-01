@@ -141,14 +141,23 @@ export const MUTATIONS: Mutation[] = [
       '§4.1d: changing the negative-claim text fails the assertion that it is on screen in its evidence state.',
   },
   {
-    id: 'tool-refusal-suppressed',
-    file: 'src/ui/assessPanel.ts',
-    anchor: '  if (a.exitCode !== 0 || overall === null || hAssessed === null) {',
-    replacement: '  if (overall === null || hAssessed === null) {',
-    test: 'below-minimum',
-    marker: 'tool-refused',
+    // The obvious mutation here -- dropping `a.exitCode !== 0` from the guard
+    // in `assessPanel.ts` -- SURVIVED, and that is a true fact about the
+    // design rather than a toothless test. A nonzero exit carrying an assessed
+    // figure is a combination `validateManifest` REFUSES, so the UI's exit-code
+    // term can never be the sole reason that guard fires. The property is real;
+    // it is just enforced one layer down. So the mutation targets the rule that
+    // actually enforces it.
+    id: 'nonzero-exit-may-carry-a-figure',
+    file: 'src/entropy/manifest.ts',
+    anchor: '    if (o !== null && o.hAssessed !== null) {\n      problems.push(`${at} exited ${a.exitCode} yet carries an assessed figure`);',
+    replacement: '    if (false as boolean) {\n      problems.push(`${at} exited ${a.exitCode} yet carries an assessed figure`);',
+    runner: 'unit',
+    test: 'rejects a nonzero exit that still carries a figure',
+    marker: 'nonzero-exit-refused',
     proves:
-      'a nonzero exit from the assessment tool is rendered as a refusal rather than passed over.',
+      'a run the tool refused cannot also carry a min-entropy figure. This is what makes the UI\u2019s ' +
+      'own exit-code check redundant rather than unchecked.',
   },
   {
     id: 'fault-direction-flipped',

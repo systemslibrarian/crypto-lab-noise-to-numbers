@@ -147,6 +147,14 @@ function renderAssessmentFor(s: LoadedSample): HTMLElement {
   // Narrowed through locals so the figures below cannot be reached with a null
   // `hAssessed` -- the compiler enforces the "no figure without a run" rule
   // rather than this function remembering to.
+  //
+  // `a.exitCode !== 0` is DEFENCE IN DEPTH, not the enforcement. A nonzero
+  // exit carrying an assessed figure is a combination `validateManifest`
+  // refuses outright, so in any manifest this page will accept, the second and
+  // third terms already cover every refusal. Mutating this term away therefore
+  // changes nothing observable -- which was measured, not assumed -- and the
+  // property is tested where it is actually enforced, in `manifest.test.ts`.
+  // The term stays because it costs nothing and is correct.
   const overall = a.overall;
   const hAssessed = overall?.hAssessed ?? null;
   if (a.exitCode !== 0 || overall === null || hAssessed === null) {
