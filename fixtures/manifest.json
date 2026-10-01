@@ -944,6 +944,135 @@
       }
     },
     {
+      "id": "all-zero",
+      "title": "Every sample the same",
+      "blurb": "A million zero samples — a full-size file with a one-symbol alphabet, which the tool refuses for a different reason than a short one.",
+      "act": 3,
+      "provenance": "deterministic",
+      "neverASecret": true,
+      "variantOf": null,
+      "seed": null,
+      "generator": "scripts/gen-fixtures.ts",
+      "procedure": "one million zero samples, then packBits(msb-first). There is no generator state and no seed: the file is 125000 zero bytes. It meets the sample minimum and is still refused, because an alphabet of one symbol carries no entropy to estimate.",
+      "encoding": {
+        "bitsPerSymbol": 1,
+        "sampleCount": 1000000,
+        "shippedForm": "packed-bits",
+        "bitOrder": "msb-first",
+        "conversion": "node scripts/unpack-bits.ts fixtures/all-zero.bin 1000000 msb-first all-zero.samples.bin",
+        "incompleteFinalSample": "n/a: the sample count is a multiple of 8, so no partial byte exists",
+        "originalBytes": 125000,
+        "originalSha256": "923b0ffd1a22207230ef2d9a76434d8c9aa6bdaa7ad9541abf0bf3b2fe32a987",
+        "convertedBytes": 1000000,
+        "convertedSha256": "d29751f2649b32ff572b5e0a9f541ea660a50f94ff0beedfb0b692b924cc8025"
+      },
+      "download": "fixtures/all-zero.bin",
+      "assessment": {
+        "tool": {
+          "program": "ea_non_iid",
+          "toolVersion": "1.1.8",
+          "forkRepo": "https://github.com/systemslibrarian/SP800-90B_EntropyAssessment",
+          "forkCommit": "328ec20c146e43b4eed86424847a106539c70a5a",
+          "upstreamBaseline": "87c104d0ed4cbc96103e7b8b38d6f2c7e0a6b289",
+          "patched": true,
+          "patchedBuildNote": "This is a PATCHED build, not NIST’s unmodified reference implementation. Every divergence from the upstream baseline is listed with its date, reason and upstream issue number in the fork’s NOTICE file. Two changes (F09 and N-01) alter results deliberately. See SPIKE.md."
+        },
+        "platform": "darwin arm64",
+        "command": "./ea_non_iid -i -a -vv -o report.json all-zero.samples.bin 1",
+        "exitCode": 255,
+        "errorLevel": -1,
+        "errorMessage": "Symbol alphabet consists of 1 symbol. No entropy awarded...",
+        "toolSha256": "d29751f2649b32ff572b5e0a9f541ea660a50f94ff0beedfb0b692b924cc8025",
+        "bitsPerSymbol": 1,
+        "bitsPerSymbolInferred": false,
+        "estimators": [
+          {
+            "name": "Most Common Value",
+            "bitsPerSample": null,
+            "bitsPerBit": null,
+            "bitstringOnly": false,
+            "declined": false,
+            "assumption": "Assumes the samples are independent and identically distributed, and bounds the probability of the single most likely value with a 99% upper confidence limit. Any structure across samples is invisible to it."
+          },
+          {
+            "name": "Collision",
+            "bitsPerSample": null,
+            "bitsPerBit": null,
+            "bitstringOnly": true,
+            "declined": false,
+            "assumption": "Assumes an i.i.d. source and infers the collision probability from how many samples pass before a repeat. Only defined for binary inputs."
+          },
+          {
+            "name": "Markov",
+            "bitsPerSample": null,
+            "bitsPerBit": null,
+            "bitstringOnly": true,
+            "declined": false,
+            "assumption": "Assumes a first-order Markov chain and bounds the most likely path of 128 samples. Dependence reaching further back than one sample is outside the model."
+          },
+          {
+            "name": "Compression",
+            "bitsPerSample": null,
+            "bitsPerBit": null,
+            "bitstringOnly": true,
+            "declined": false,
+            "assumption": "Assumes nothing about the distribution, and bounds entropy from how well a Maurer-style compression of the bit string does. Sensitive to repetition, blind to arithmetic structure."
+          },
+          {
+            "name": "T-Tuple",
+            "bitsPerSample": null,
+            "bitsPerBit": null,
+            "bitstringOnly": false,
+            "declined": false,
+            "assumption": "Assumes nothing about independence, and bounds entropy from the frequency of the most common short tuple. Only sees patterns up to the longest repeated tuple it finds."
+          },
+          {
+            "name": "LRS",
+            "bitsPerSample": null,
+            "bitsPerBit": null,
+            "bitstringOnly": false,
+            "declined": false,
+            "assumption": "Assumes nothing about independence, and bounds entropy using the longest repeated substring. Complements T-Tuple at longer lengths."
+          },
+          {
+            "name": "MultiMCW Prediction",
+            "bitsPerSample": null,
+            "bitsPerBit": null,
+            "bitstringOnly": false,
+            "declined": false,
+            "assumption": "Runs four sliding-window majority predictors and bounds entropy from how well the best one guesses the next sample. Catches local bias; cannot catch structure no window sees."
+          },
+          {
+            "name": "Lag Prediction",
+            "bitsPerSample": null,
+            "bitsPerBit": null,
+            "bitstringOnly": false,
+            "declined": false,
+            "assumption": "Predicts each sample from the one that occurred a fixed number of samples earlier, across many lags. Catches periodicity; blind to aperiodic dependence."
+          },
+          {
+            "name": "MultiMMC Prediction",
+            "bitsPerSample": null,
+            "bitsPerBit": null,
+            "bitstringOnly": false,
+            "declined": false,
+            "assumption": "Maintains Markov models of orders 1 through 16 with counting and bounds entropy from the best predictor. Catches finite-order dependence up to order 16."
+          },
+          {
+            "name": "LZ78Y Prediction",
+            "bitsPerSample": null,
+            "bitsPerBit": null,
+            "bitstringOnly": false,
+            "declined": false,
+            "assumption": "Builds an LZ78Y dictionary of observed strings and predicts the next sample from it. Catches dictionary-compressible structure."
+          }
+        ],
+        "overall": null,
+        "partial": false,
+        "belowMinimum": false
+      }
+    },
+    {
       "id": "counter-hash-sha256",
       "title": "Counter-hash stream",
       "blurb": "SHA-256 over an incrementing counter. Published in full, reproducible by anyone, and predictable to all of them.",

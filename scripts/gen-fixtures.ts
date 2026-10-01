@@ -97,6 +97,12 @@ async function samplesFor(spec: FixtureSpec): Promise<Uint8Array> {
     case 'fault-predictable':
       return lfsrSamples(spec.sampleCount, spec.seed!);
 
+    // The degenerate case the brief names: a full-size file whose alphabet has
+    // one symbol. It is not a fault variant of the model -- it is the boundary
+    // the tool is asked about.
+    case 'all-zero':
+      return new Uint8Array(spec.sampleCount);
+
     case 'counter-hash-sha256':
       return counterHashStream({ ...COUNTER_HASH_SPEC, length: spec.sampleCount }, nodeSha256);
 

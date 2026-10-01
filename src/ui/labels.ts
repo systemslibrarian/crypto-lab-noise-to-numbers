@@ -139,20 +139,61 @@ export function notRunBadge(): HTMLElement {
 /** The full sentence the lab shows for the no-assessment state. */
 export const NOT_RUN_SENTENCE = 'SP 800-90B assessment not run on this modified file.';
 
+/** The badges a fixture carries, as a decision rather than as markup. */
+export type BadgeKind =
+  | `provenance:${Provenance}`
+  | 'never-a-secret'
+  | 'exploratory'
+  | 'partial'
+  | 'assessment-not-run';
+
+/**
+ * WHICH BADGES A FIXTURE CARRIES. A pure function, separated from the markup
+ * on purpose: this is where invariants I2, I3, I4 and I6 actually live, and a
+ * decision is testable where a DOM fragment is only inspectable.
+ *
+ * It also makes one of them testable AT ALL. The `partial` branch is not
+ * reachable through any fixture this lab can ship: SP 800-90B's own
+ * 1,000,000-sample minimum means a file large enough to be assessed is large
+ * enough for all ten estimators to report, and a file small enough for one to
+ * decline is refused before any estimator runs. So the only honest way to
+ * exercise I2 is to hand this function an assessment that says `partial`, which
+ * `labels.test.ts` does. The branch is kept rather than deleted because v2's
+ * real captures and v3's in-browser engine can both reach it — a live run on a
+ * visitor's own file genuinely can have an estimator decline.
+ */
+export function badgesFor(f: Fixture): BadgeKind[] {
+  const out: BadgeKind[] = [`provenance:${f.provenance}`];
+  if (f.neverASecret) out.push('never-a-secret');
+  const a = f.assessment;
+  if (a === null) {
+    out.push('assessment-not-run');
+    return out;
+  }
+  if (a.belowMinimum) out.push('exploratory');
+  if (a.partial) out.push('partial');
+  if (a.overall === null || a.overall.hAssessed === null) out.push('assessment-not-run');
+  return out;
+}
+
 /**
  * Every badge a fixture carries, in one row. Used by each act, so a fixture
  * cannot appear in one panel with its provenance and in another without it.
  */
 export function badgeRow(f: Fixture): HTMLElement {
-  const row = el('div', { class: 'badge-row' }, provenanceBadge(f.provenance));
-  if (f.neverASecret) row.append(neverASecretBadge());
-  const a = f.assessment;
-  if (a === null) {
-    row.append(notRunBadge());
-  } else {
-    if (a.belowMinimum) row.append(exploratoryBadge(f.encoding.sampleCount));
-    if (a.partial) row.append(partialBadge());
-    if (a.overall === null || a.overall.hAssessed === null) row.append(notRunBadge());
+  const row = el('div', { class: 'badge-row' });
+  for (const kind of badgesFor(f)) {
+    if (kind.startsWith('provenance:')) {
+      row.append(provenanceBadge(kind.slice('provenance:'.length) as Provenance));
+    } else if (kind === 'never-a-secret') {
+      row.append(neverASecretBadge());
+    } else if (kind === 'exploratory') {
+      row.append(exploratoryBadge(f.encoding.sampleCount));
+    } else if (kind === 'partial') {
+      row.append(partialBadge());
+    } else {
+      row.append(notRunBadge());
+    }
   }
   return row;
 }

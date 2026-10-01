@@ -80,13 +80,25 @@ function build() {
   return { ok: r.status === 0, output: `${r.stdout ?? ''}${r.stderr ?? ''}` };
 }
 
-/** Run only the owning test, with CI=1 so no reused server can answer. */
-function runTest(titleSubstring) {
-  const r = sh(
-    'npx',
-    ['playwright', 'test', '--project=claims', '--grep', titleSubstring],
-    { env: { ...process.env, CI: '1' } }
-  );
+/**
+ * Run only the owning test.
+ *
+ * `CI=1` for the browser suite so `reuseExistingServer` is false and no stale
+ * preview can answer -- a reused server would serve the PREVIOUS bundle and
+ * the mutation would read as surviving.
+ *
+ * A mutation whose owning check is a unit test runs under vitest instead. That
+ * is not a shortcut: the badge decision is a pure function with a branch no
+ * shipped fixture can reach, so a unit test is the only place it can honestly
+ * be exercised at all.
+ */
+function runTest(titleSubstring, runner = 'claims') {
+  const r =
+    runner === 'unit'
+      ? sh('npx', ['vitest', 'run', '-t', titleSubstring])
+      : sh('npx', ['playwright', 'test', '--project=claims', '--grep', titleSubstring], {
+          env: { ...process.env, CI: '1' },
+        });
   return { status: r.status, output: `${r.stdout ?? ''}${r.stderr ?? ''}` };
 }
 
@@ -98,8 +110,8 @@ function classify(output) {
   if (/was not able to start|Process from config\.webServer/i.test(output)) return 'server-never-started';
   if (/ERR_CONNECTION_REFUSED|net::ERR_/i.test(output)) return 'connection-refused';
   if (/error TS\d+|Build failed|Transform failed/i.test(output)) return 'build-error';
-  if (/\d+ failed/.test(output)) return 'assertion-failed';
-  if (/No tests found/i.test(output)) return 'no-tests-selected';
+  if (/\d+ failed/.test(output) || /Tests\s+\d+ failed/.test(output)) return 'assertion-failed';
+  if (/No tests found|No test files found/i.test(output)) return 'no-tests-selected';
   return 'unknown';
 }
 
@@ -176,7 +188,7 @@ for (const m of selected) {
       continue;
     }
 
-    const run = runTest(m.test);
+    const run = runTest(m.test, m.runner ?? 'claims');
     const why = classify(run.output);
 
     if (run.status === 0) {

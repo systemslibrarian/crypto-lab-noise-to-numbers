@@ -143,6 +143,21 @@ export const FIXTURES: FixtureSpec[] = [
       'generateInmSamples(50000, xoshiro128ss(777), inm-clean’s parameters), then packBits(msb-first).',
   },
   {
+    id: 'all-zero',
+    title: 'Every sample the same',
+    blurb:
+      'A million zero samples — a full-size file with a one-symbol alphabet, which the tool refuses for a different reason than a short one.',
+    provenance: 'deterministic',
+    bitsPerSymbol: 1,
+    sampleCount: FULL_SAMPLES,
+    shippedForm: 'packed-bits',
+    act: 3,
+    procedure:
+      'one million zero samples, then packBits(msb-first). There is no generator state and no ' +
+      'seed: the file is 125000 zero bytes. It meets the sample minimum and is still refused, ' +
+      'because an alphabet of one symbol carries no entropy to estimate.',
+  },
+  {
     id: 'counter-hash-sha256',
     title: 'Counter-hash stream',
     blurb:

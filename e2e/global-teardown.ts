@@ -16,9 +16,27 @@
  * project), because then an absent pair means "not selected" rather than "not
  * performed", and failing on that would train people to ignore it.
  */
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import type { FullConfig, FullResult, Reporter, Suite, TestCase } from '@playwright/test/reporter';
 import { MUTATIONS } from './mutations';
 import { SEP, executedPairs, resetSink } from './sink';
+
+/**
+ * How many `test(...)` declarations `claims.spec.ts` contains.
+ *
+ * This is how a PARTIAL run is detected, and it is deliberately not
+ * `config.grep`: a CLI `--grep` does NOT reach the reporter — `config.grep` is
+ * `/.*` + `/` whatever was passed, because it reflects the config file rather
+ * than the command line. Trusting it meant every `--grep` run was treated as a
+ * full one, so a single-test run failed on all eleven entries it had not
+ * selected. Counting the declarations needs no cooperation from the caller and
+ * maintains itself as tests are added.
+ */
+function declaredClaimsTests(): number {
+  const src = readFileSync(resolve(import.meta.dirname, 'claims.spec.ts'), 'utf8');
+  return (src.match(/^test\(/gm) ?? []).length;
+}
 
 class MutationLedgerReporter implements Reporter {
   private filtered = false;
@@ -26,14 +44,15 @@ class MutationLedgerReporter implements Reporter {
 
   onBegin(config: FullConfig, suite: Suite): void {
     resetSink();
-    // A grep, or a run that selected only some projects, is a partial run.
-    this.filtered =
-      config.grep.toString() !== '/.*/' ||
-      (config.grepInvert !== null && config.grepInvert !== undefined) ||
-      !config.projects.some((p) => p.name === 'claims');
-    this.claimsRan = suite
+    const claimsTests = suite
       .allTests()
-      .some((t: TestCase) => t.titlePath().some((p) => p.includes('claims.spec.ts')));
+      .filter((t: TestCase) => t.titlePath().some((p) => p.includes('claims.spec.ts')));
+    this.claimsRan = claimsTests.length > 0;
+    // Fewer tests selected than the file declares means a filtered run, and an
+    // absent pair then means "not selected" rather than "not performed".
+    this.filtered =
+      !config.projects.some((p) => p.name === 'claims') ||
+      claimsTests.length < declaredClaimsTests();
   }
 
   async onEnd(result: FullResult): Promise<{ status: FullResult['status'] } | void> {
@@ -46,16 +65,25 @@ class MutationLedgerReporter implements Reporter {
     }
 
     const executed = executedPairs();
+    // Only entries owned by the browser suite are checked here. A mutation
+    // whose owning check is a unit test (`runner: 'unit'`) cannot appear in
+    // this sink by construction, and failing on its absence would be the same
+    // false alarm this reporter exists to prevent.
     const missing = MUTATIONS.filter(
-      (m) => !Array.from(executed).some((pair) => {
-        const [title, marker] = pair.split(SEP);
-        return marker === m.marker && title.includes(m.test);
-      })
+      (m) =>
+        (m.runner ?? 'claims') === 'claims' &&
+        !Array.from(executed).some((pair) => {
+          const [title, marker] = pair.split(SEP);
+          return marker === m.marker && title.includes(m.test);
+        })
     );
 
     if (missing.length === 0) {
+      const browserOwned = MUTATIONS.filter((m) => (m.runner ?? 'claims') === 'claims').length;
+      const unitOwned = MUTATIONS.length - browserOwned;
       process.stdout.write(
-        `\nmutation ledger: all ${MUTATIONS.length} entries were backed by a check that actually ran.\n`
+        `\nmutation ledger: all ${browserOwned} browser-owned entries were backed by a check that ` +
+          `actually ran (${unitOwned} ${unitOwned === 1 ? 'is' : 'are'} owned by unit tests).\n`
       );
       return;
     }

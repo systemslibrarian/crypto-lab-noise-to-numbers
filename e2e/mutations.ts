@@ -29,6 +29,12 @@ export interface Mutation {
   test: string;
   /** The marker the owning test asserts on, as recorded in the sink. */
   marker: string;
+  /**
+   * Which suite owns it. Most checks are end-to-end, but the badge DECISION is
+   * a pure function with a branch no shipped fixture reaches, so its mutation
+   * is owned by a unit test instead. See `src/ui/labels.test.ts`.
+   */
+  runner?: 'claims' | 'unit';
   /** What this mutation proves the suite can see. */
   proves: string;
 }
@@ -57,20 +63,26 @@ export const MUTATIONS: Mutation[] = [
       "the validator re-derives the tool's combination rule rather than agreeing with whatever is recorded.",
   },
   {
-    id: 'not-run-becomes-a-figure',
-    file: 'src/ui/assessPanel.ts',
-    anchor: '  if (s.fixture === null || s.modified) {',
-    replacement: '  if (false as boolean) {',
+    id: 'reread-not-detected-as-a-change',
+    file: 'src/ui/inspectPanel.ts',
+    anchor:
+      '      (form !== current.fixture.encoding.shippedForm || width !== current.fixture.encoding.bitsPerSymbol);',
+    replacement:
+      '      (form !== current.fixture.encoding.shippedForm && width !== current.fixture.encoding.bitsPerSymbol);',
     test: 'modified file',
     marker: 'assessment-not-run',
     proves:
-      'the "assessment not run" state is rendered for a modified file rather than a figure for different bytes (invariant I1).',
+      'invariant I1. A single `||` to `&&` swap stops a symbol-width change being detected as a ' +
+      'change, so the fixture keeps its recorded figure and the lab displays a min-entropy number ' +
+      'measured for a DIFFERENT reading of those bytes. Deleting the guard outright does not ' +
+      'compile and is therefore never a kill; this swap does, which is what makes it the honest ' +
+      'mutation.',
   },
   {
     id: 'exploratory-label-dropped',
     file: 'src/ui/labels.ts',
-    anchor: '    if (a.belowMinimum) row.append(exploratoryBadge(f.encoding.sampleCount));',
-    replacement: '    if (false as boolean) row.append(exploratoryBadge(f.encoding.sampleCount));',
+    anchor: "  if (a.belowMinimum) out.push('exploratory');",
+    replacement: "  if (false as boolean) out.push('exploratory');",
     test: 'below-minimum',
     marker: 'exploratory',
     proves: 'the exploratory label is rendered for a sub-minimum file (invariant I6).',
@@ -78,17 +90,23 @@ export const MUTATIONS: Mutation[] = [
   {
     id: 'partial-label-dropped',
     file: 'src/ui/labels.ts',
-    anchor: '    if (a.partial) row.append(partialBadge());',
-    replacement: '    if (false as boolean) row.append(partialBadge());',
-    test: 'partial coverage',
+    anchor: "  if (a.partial) out.push('partial');",
+    replacement: "  if (false as boolean) out.push('partial');",
+    runner: 'unit',
+    test: 'marks a partial run partial',
     marker: 'partial-tracks-the-flag',
-    proves: "the partial label tracks the assessment's own partial flag (invariant I2).",
+    proves:
+      "the partial label tracks the assessment's own partial flag (invariant I2). Owned by a " +
+      'UNIT test, not an end-to-end one, because no fixture this lab can ship reaches the branch: ' +
+      "SP 800-90B's 1,000,000-sample minimum means a file large enough to assess is large enough " +
+      'for all ten estimators to report. The end-to-end version of this mutation SURVIVED, which ' +
+      'was evidence about the data rather than about the tests.',
   },
   {
     id: 'provenance-badge-dropped',
     file: 'src/ui/labels.ts',
-    anchor: "  const row = el('div', { class: 'badge-row' }, provenanceBadge(f.provenance));",
-    replacement: "  const row = el('div', { class: 'badge-row' });",
+    anchor: '  const out: BadgeKind[] = [`provenance:${f.provenance}`];',
+    replacement: '  const out: BadgeKind[] = [];',
     test: 'provenance',
     marker: 'provenance-simulated',
     proves: 'every fixture carries a persistent provenance badge (invariant I3).',
@@ -96,8 +114,8 @@ export const MUTATIONS: Mutation[] = [
   {
     id: 'never-a-secret-dropped',
     file: 'src/ui/labels.ts',
-    anchor: '  if (f.neverASecret) row.append(neverASecretBadge());',
-    replacement: '  if (false as boolean) row.append(neverASecretBadge());',
+    anchor: "  if (f.neverASecret) out.push('never-a-secret');",
+    replacement: "  if (false as boolean) out.push('never-a-secret');",
     test: 'never a secret',
     marker: 'never-a-secret',
     proves: 'public fixtures are marked never-a-secret (invariant I4).',
