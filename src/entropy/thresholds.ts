@@ -13,14 +13,15 @@
  * 1-bit and an 8-bit fixture can be set side by side):
  *
  *     counter-hash-sha256       0.919220   published construction, predictable
+ *     inm-conditioned-keccak    0.912799   the modelled source, conditioned
  *     fault-predictable (LFSR)  0.833849   32 bits of state, no physical noise
- *     inm-conditioned-keccak    0.829800   the modelled source, conditioned
- *     fault-periodic            0.631179
- *     fault-stuck-bit           0.405375
- *     inm-clean                 0.372519   the modelled physical source
- *     fault-bias                0.207456
+ *     fault-periodic            0.618747
+ *     fault-stuck-bit           0.403581
+ *     inm-clean                 0.372625   the modelled physical source
+ *     fault-bias                0.208012
  *     fault-repeated-block      0.000006
  *     exploratory-short         no assessment: below the sample minimum
+ *     all-zero                  no assessment: a one-symbol alphabet
  *
  * THE LINE, DRAWN AFTER READING THAT COLUMN: 0.75 bits per bit, three
  * quarters of the per-bit maximum. It separates the three streams a reader

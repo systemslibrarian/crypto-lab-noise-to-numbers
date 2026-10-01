@@ -41,7 +41,7 @@ export const FIXTURES: FixtureSpec[] = [
     id: 'inm-clean',
     title: 'Modelled raw noise',
     blurb:
-      'The modular-multiplication loop at the vendor’s design gain, with Gaussian noise injected at each step.',
+      'The modular-multiplication loop at the vendor’s design gain, with bell-shaped noise injected at each step.',
     provenance: 'simulated',
     bitsPerSymbol: 1,
     sampleCount: FULL_SAMPLES,

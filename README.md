@@ -23,7 +23,7 @@ concentrates entropy but never creates it.
 The lab demonstrates that rather than asserting it. A stream whose entire
 construction is published here — SHA-256 over a little-endian counter, starting
 at zero — was assessed at **0.919220 bits of min-entropy per bit**. The modelled
-physical noise source was assessed at **0.372519**. The stream anyone can
+physical noise source was assessed at **0.372625**. The stream anyone can
 regenerate from four lines of description scored **2.47 times higher** than the
 one driven by thermal noise. Nobody decided those numbers in advance; they are
 what the tool reported, and the page shows you how to reproduce them.
@@ -45,7 +45,7 @@ browser.
 | **Real** | Every min-entropy figure. Each comes from a pinned native run of `ea_non_iid` on one exact file, recorded with that file's SHA-256, the exact command, the tool commit and the platform. |
 | **Real** | The Keccak-f[1600] permutation, hand-rolled in `src/entropy/keccak.ts` and checked against the FIPS 202 SHA3-256 digests built from the same permutation. |
 | **Real** | The driver's sponge construction, the counter-hash stream, the packing arithmetic, every descriptive statistic, and the one-time-pad XOR. |
-| **Modelled** | The noise source. `src/entropy/inm-model.ts` is a software model of the vendor's own `updateA()` loop with Gaussian noise injected. It is **not hardware** and not a capture from hardware, and it is badged "Simulated" everywhere it appears. |
+| **Modelled** | The noise source. `src/entropy/inm-model.ts` is a software model of the vendor's own `updateA()` loop with bell-shaped noise injected (Irwin-Hall, so that fixture generation is bit-reproducible across engines — see `src/entropy/prng.ts`). It is **not hardware** and not a capture from hardware, and it is badged "Simulated" everywhere it appears. |
 | **Pinned, not computed here** | Nothing is assessed in your browser. The browser computes **descriptive statistics only** — bit balance, run lengths, lag-k autocorrelation, repeated-block search — each labelled "descriptive — not an SP 800-90B estimator". |
 
 ### The one thing to know about the tool
@@ -64,7 +64,7 @@ with its reason, its upstream issue and its validation in
 1. **Meet the Source** — step the modular-multiplication loop yourself and watch
    the state fold across the threshold and emit a bit. Sets the vendor's
    *theoretical design rate* (log₂(1.82) = 0.863938 bits per bit) beside the
-   *measured* estimate for the modelled stream (0.372519), and keeps them
+   *measured* estimate for the modelled stream (0.372625), and keeps them
    apart.
 2. **Inspect Raw Samples** — descriptive statistics in a Web Worker, with
    progress, cancellation and a size cap. Load a shipped fixture or your own
@@ -187,7 +187,7 @@ npm run dev          # http://localhost:5173/crypto-lab-noise-to-numbers/
 Other scripts:
 
 ```sh
-npm test             # the unit and correctness suite (102 tests)
+npm test             # the unit and correctness suite (113 tests)
 npm run build        # type-check and build
 npm run test:claims  # the claims suite, against the production build
 npm run test:a11y    # the WCAG 2.1 A/AA gate, against the production build
@@ -244,13 +244,14 @@ npm run fixtures:verify   # regenerate and re-measure, failing on any disagreeme
 
 ## Build & Verify
 
-**102 unit tests** (Vitest), **23 claims tests** and **2 accessibility scans**
+**113 unit tests** (Vitest), **23 claims tests** and **2 accessibility scans**
 (Playwright), plus an independent fixture-verification job.
 
 | Check | What it establishes |
 |---|---|
 | **Known-answer tests** | The hand-rolled Keccak-f[1600] is checked by building SHA3-256 from it and comparing against the FIPS 202 digests for the empty string, `abc` and the 56-byte vector — *and* against Node's own `crypto.createHash('sha3-256')` across ten message lengths spanning the rate boundary. Two independent oracles: a memorised constant could be misremembered, and agreement with Node alone proves only that two things agree. |
 | **Vendor-transcription tests** | `inm-model.test.ts` pins the parts of the vendor's `updateA()` that are easy to "tidy" into something else — the second noise application on the zero branch, the clamp at the top of the call — and measures the correlation the vendor's README warns about. |
+| **Determinism KAT** (`prng.test.ts`) | Pins the exact generator stream, asserts every noise draw is an exact multiple of 2⁻²⁴, and fails if `prng.ts` ever reaches for `Math.log`/`sin`/`cos`/`exp`/`pow` again. It exists because this repository shipped a real reproducibility bug: Box-Muller noise made the fixtures engine-dependent, and the eight-million-sample conditioned fixture regenerated to different bytes on Linux than on the machine that measured it. See below. |
 | **Manifest validation** | `validateManifest()` fails closed on a figure attributed to a file whose hash does not match, an assessed value that is not the combination of its own estimators, a full run recorded against a below-minimum file, or an unflagged partial run. The page renders the failure instead of the lab. |
 | **Claims suite** (`e2e/claims.spec.ts`) | Every displayed figure matches its manifest entry; the descriptive statistics are **independently recomputed** from the fixture's own bytes by a different route; the counter-hash stream is regenerated with Node's crypto and compared against both the page's WebCrypto output and the shipped file; the fault table's movements are re-derived from their own two endpoints; and the headline threshold is read out of the source. |
 | **Negative claims** (§4.1d) | Each line of the honesty panel is a tested claim with an evidence fixture: a reachable state where every check the page performs reports success *and* the named property is violated anyway. |
@@ -258,11 +259,37 @@ npm run fixtures:verify   # regenerate and re-measure, failing on any disagreeme
 | **Independent fixture check** (`.github/workflows/fixtures.yml`) | Builds the pinned NIST tool from source, checks it against upstream's own pinned figure non-vacuously, regenerates every fixture from its generator, reruns every recorded command, and fails on any disagreement — every estimator, both branch minima, the exit status and the error message. This checks fixture *generation*, not just table-vs-fixture agreement. |
 | **Accessibility gate** | `@axe-core/playwright`, WCAG 2.1 A/AA, over the production build at desktop and 380px, driving every state the lab renders — including the refusals, the "assessment not run" state and the pad failure, which is where this lab's most important sentences live. Zero violations, zero unexplained `incomplete` results, arithmetic contrast over every text node including `aria-hidden` ones, a measured non-text-contrast oracle with an **empty** baseline, and reflow. |
 
-The a11y gate found three real defects while being wired, all fixed in the
-source rather than baselined: a `[hidden]` progress bar that kept painting
-because a class rule outranked the UA's `[hidden]`, an `aria-label` on a
-role-less `<p>`, and control boundaries at 2.30–2.51:1 against a 3:1
-requirement.
+### What the gates actually caught
+
+None of these were hypothetical, and all were fixed in the source rather than
+suppressed.
+
+- **The a11y gate** found three defects while being wired: a `[hidden]`
+  progress bar that kept painting because a class rule outranked the UA's
+  `[hidden]` rule, an `aria-label` on a role-less `<p>` (which axe reports only
+  in its `incomplete` bucket, so a violations-only gate never sees it), and
+  control boundaries at 2.30–2.51:1 against a 3:1 requirement.
+- **The mutation run** found that the partial-coverage branch is unreachable
+  through any shipped fixture, and that deleting the "assessment not run" guard
+  does not compile and so was never a kill. Both ledger entries were moved to
+  checks that genuinely bite rather than left reading as passes.
+- **The independent fixture check** found two things the other gates could not.
+  First, the pinned NIST tool **did not build on Linux at all** — `ULONG_MAX`
+  used without `<climits>`, which macOS's libc++ supplies transitively and
+  GCC's libstdc++ does not — so the repository's own reproduction instructions
+  were unusable for most readers. Second, and worse, **the fixtures were not
+  reproducible**: the generator drew noise with Box-Muller, whose `Math.log`,
+  `Math.sin` and `Math.cos` ECMAScript explicitly leaves
+  implementation-approximated. The modular-multiplication map is chaotic by
+  design, so one differing ulp diverged every sample after it, and the
+  eight-million-sample conditioned fixture regenerated to completely different
+  bytes on the CI runner. Noise is now drawn by Irwin-Hall, which uses only
+  exactly-specified arithmetic, and `prng.test.ts` pins the stream so it cannot
+  drift again silently.
+
+That last one is the reason this job exists. Every other check in the table
+would have passed a lab whose central claim — regenerate this file and get
+these numbers — was false.
 
 ---
 

@@ -34,12 +34,27 @@
  *     driven out of [0,1] by the multiply is carried into the next call and
  *     clamped there.
  *
- * ONE DELIBERATE DIVERGENCE FROM THE VENDOR'S SIMULATION. The vendor injects
- * UNIFORM noise, `noiseAmplitude*((rand()/RAND_MAX) - 0.5)`. This model injects
- * GAUSSIAN noise instead, which is the right shape for the thermal (Johnson-
- * Nyquist) noise the physical circuit actually amplifies, and which the brief
- * for this lab asks for. The divergence is recorded in each fixture manifest.
- * It changes the output distribution; it is not a neutral substitution.
+ * ONE DELIBERATE DIVERGENCE FROM THE VENDOR'S SIMULATION, AND ONE CONSTRAINT
+ * ON HOW IT IS DRAWN.
+ *
+ * The vendor injects UNIFORM noise, `noiseAmplitude*((rand()/RAND_MAX) - 0.5)`.
+ * This model injects BELL-SHAPED noise instead, which is the right shape for
+ * the thermal (Johnson-Nyquist) noise the physical circuit actually amplifies.
+ * The divergence is recorded in each fixture manifest. It changes the output
+ * distribution; it is not a neutral substitution.
+ *
+ * The draw itself is Irwin-Hall rather than Box-Muller, and that is a
+ * REPRODUCIBILITY constraint rather than a modelling choice -- see `prng.ts`.
+ * ECMAScript does not require `Math.log`, `Math.sin` or `Math.cos` to be
+ * correctly rounded, this map is chaotic, and one differing ulp therefore
+ * diverges every sample after it. That is not hypothetical: it broke the
+ * eight-million-sample fixture between two engine versions, and the
+ * independent fixture check caught it.
+ *
+ * Measured, the substitution does not disturb what this lab reports: lag-1
+ * autocorrelation is -0.256 under Irwin-Hall and -0.262 under the vendor's own
+ * uniform noise, so the correlation is a property of the MAP rather than of
+ * the noise shape.
  *
  * THE DESIGN ENTROPY RATE IS log2(K) BITS PER BIT, and that is a THEORETICAL
  * DESIGN RATE, not a measurement. The vendor's README (same commit) states it
@@ -62,7 +77,7 @@ export function designEntropyRate(k: number): number {
 export interface InmParams {
   /** Loop gain. The vendor's boards are K = 1.82. */
   k: number;
-  /** Standard deviation of the injected Gaussian noise, in units of the state. */
+  /** Standard deviation of the injected noise, in units of the state. */
   noiseSigma: number;
   /**
    * Comparator threshold. The circuit's is 0.5. Moving it is how the `bias`

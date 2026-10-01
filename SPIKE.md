@@ -183,8 +183,8 @@ collision estimate's root-finding, the compression estimate's statistics.
 **What this means for v3, and it is a design constraint rather than a
 caveat:** a browser engine must be validated against the native tool with a
 *stated, measured* tolerance, and the lab must display the tolerance alongside
-any browser-computed figure. The honest form is "0.372519 ± 1e-9, computed in
-your browser; the native tool on this file gives 0.372519", not a bare number
+any browser-computed figure. The honest form is "0.372625 ± 1e-9, computed in
+your browser; the native tool on this file gives 0.372625", not a bare number
 that looks like the pinned one. Invariant I1 already says a v3 figure must come
 from "a browser engine validated against native" — this section is what that
 validation has to establish.
@@ -290,12 +290,12 @@ rather than assumed:
   bit, the MultiMMC estimate **rises**. Because the reported figure is a
   minimum, an input on which MultiMMC was the binding minimum reports a HIGHER
   figure after this change. MultiMMC is not the binding estimator on any of
-  this lab's ten fixtures: Compression binds on five (`inm-clean`,
-  `fault-stuck-bit`, `fault-bias`, `fault-periodic`, `fault-predictable`), LRS
-  on one (`fault-repeated-block`), T-Tuple on `counter-hash-sha256` and LZ78Y
-  on `inm-conditioned-keccak`. The remaining two — `exploratory-short` and
-  `all-zero` — have no assessment at all, because the tool refused both. All
-  eight that do bind through the literal branch. So no figure here is affected — which is a
+  this lab's ten fixtures: Compression binds on six (`inm-clean`,
+  `fault-stuck-bit`, `fault-bias`, `fault-periodic`, `fault-predictable` and
+  `inm-conditioned-keccak`), LRS on one (`fault-repeated-block`) and T-Tuple on
+  `counter-hash-sha256`. The remaining two — `exploratory-short` and `all-zero`
+  — have no assessment at all, because the tool refused both. All eight that do
+  bind through the literal branch. So no figure here is affected — which is a
   measured property of these fixtures rather than a general claim, and
   `fixtures.yml` would catch it changing.
 - **N-01** changes an IID *verdict*, not a min-entropy figure, and this lab

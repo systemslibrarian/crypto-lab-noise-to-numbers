@@ -114,7 +114,7 @@ async function selectFixture(page: Page, id: string): Promise<void> {
   await expect(page.locator('#analyse-progress')).toBeHidden();
 }
 
-/** Parse a "0.372519 / 1" figure value into its number. */
+/** Parse a "0.372625 / 1" figure value into its number. */
 function parseFigure(text: string): number {
   const m = text.trim().match(/^([\d.]+)\s*\/\s*(\d+)$/);
   if (!m) throw new Error(`not a figure with a unit: ${JSON.stringify(text)}`);
@@ -140,6 +140,7 @@ test('the manifest the page renders is the manifest on disk, and it validates', 
   // fixture and DISAGREES on both 8-bit ones, so this is checked against a
   // fixture where the two readings genuinely differ.
   let sawMultiBit = false;
+  let sawReadingsDiffer = false;
   for (const f of MANIFEST.fixtures) {
     const a = f.assessment;
     if (!a || !a.overall || a.overall.hAssessed === null) continue;
@@ -159,13 +160,19 @@ test('the manifest the page renders is the manifest on disk, and it validates', 
     if (width > 1) {
       sawMultiBit = true;
       expect(a.overall.hBitstring, `${f.id} H_bitstring`).toBeCloseTo(minBits, 9);
-      expect(
-        Math.abs(a.overall.assessedBitsPerBit! - minBits),
-        `${f.id}: the naive per-bit minimum must differ here, or this check proves nothing`
-      ).toBeGreaterThan(1e-6);
+      // Whether the naive reading coincides depends on WHICH branch binds, so
+      // it is not asserted per fixture -- a fixture whose bit-string branch
+      // binds legitimately agrees with it. What must hold is that at least one
+      // fixture tells the two apart, or the re-derivation above proves nothing.
+      if (Math.abs(a.overall.assessedBitsPerBit! - minBits) > 1e-6) sawReadingsDiffer = true;
     }
   }
   expect(sawMultiBit, 'at least one multi-bit fixture must exercise the combination rule').toBe(true);
+  expect(
+    sawReadingsDiffer,
+    'at least one multi-bit fixture must distinguish min(H_original, w x H_bitstring) from the ' +
+      'naive minimum of the per-bit column, or this test agrees with both readings'
+  ).toBe(true);
 });
 
 test('every displayed figure belongs to the file being viewed (invariant I1)', async ({ page }) => {

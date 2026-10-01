@@ -23,9 +23,9 @@
         "conversion": "node scripts/unpack-bits.ts fixtures/inm-clean.bin 1000000 msb-first inm-clean.samples.bin",
         "incompleteFinalSample": "n/a: the sample count is a multiple of 8, so no partial byte exists",
         "originalBytes": 125000,
-        "originalSha256": "61dec1fa2bd69b9cebbb5c3cf79ef96b1519c8396f6e8dc0c29c27b829dd0bc5",
+        "originalSha256": "929b398a149c375eb313c10def5bcc9191cd8043f1bf7ff176fd88132f6716c0",
         "convertedBytes": 1000000,
-        "convertedSha256": "6decce516e39dda39d63eb8a798614ec624f19f0edd96c4165b7d43156f1e0c5"
+        "convertedSha256": "b361399d746b69b6bc42dd2ab250f2193427c1c2c9172ff9e59a83b95f2d4cbb"
       },
       "download": "fixtures/inm-clean.bin",
       "assessment": {
@@ -43,14 +43,14 @@
         "exitCode": 0,
         "errorLevel": 0,
         "errorMessage": null,
-        "toolSha256": "6decce516e39dda39d63eb8a798614ec624f19f0edd96c4165b7d43156f1e0c5",
+        "toolSha256": "b361399d746b69b6bc42dd2ab250f2193427c1c2c9172ff9e59a83b95f2d4cbb",
         "bitsPerSymbol": 1,
         "bitsPerSymbolInferred": false,
         "estimators": [
           {
             "name": "Most Common Value",
-            "bitsPerSample": 0.9959692198661829,
-            "bitsPerBit": 0.9959692198661829,
+            "bitsPerSample": 0.9951752935995803,
+            "bitsPerBit": 0.9951752935995803,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Assumes the samples are independent and identically distributed, and bounds the probability of the single most likely value with a 99% upper confidence limit. Any structure across samples is invisible to it."
@@ -65,32 +65,32 @@
           },
           {
             "name": "Markov",
-            "bitsPerSample": 0.6723960242607387,
-            "bitsPerBit": 0.6723960242607387,
+            "bitsPerSample": 0.6737762911537201,
+            "bitsPerBit": 0.6737762911537201,
             "bitstringOnly": true,
             "declined": false,
             "assumption": "Assumes a first-order Markov chain and bounds the most likely path of 128 samples. Dependence reaching further back than one sample is outside the model."
           },
           {
             "name": "Compression",
-            "bitsPerSample": 0.37251857738330657,
-            "bitsPerBit": 0.37251857738330657,
+            "bitsPerSample": 0.3726245081302937,
+            "bitsPerBit": 0.3726245081302937,
             "bitstringOnly": true,
             "declined": false,
             "assumption": "Assumes nothing about the distribution, and bounds entropy from how well a Maurer-style compression of the bit string does. Sensitive to repetition, blind to arithmetic structure."
           },
           {
             "name": "T-Tuple",
-            "bitsPerSample": 0.7955274819997914,
-            "bitsPerBit": 0.7955274819997914,
+            "bitsPerSample": 0.8045191400946509,
+            "bitsPerBit": 0.8045191400946509,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Assumes nothing about independence, and bounds entropy from the frequency of the most common short tuple. Only sees patterns up to the longest repeated tuple it finds."
           },
           {
             "name": "LRS",
-            "bitsPerSample": 0.834502118453049,
-            "bitsPerBit": 0.834502118453049,
+            "bitsPerSample": 0.870015041807232,
+            "bitsPerBit": 0.870015041807232,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Assumes nothing about independence, and bounds entropy using the longest repeated substring. Complements T-Tuple at longer lengths."
@@ -105,35 +105,35 @@
           },
           {
             "name": "Lag Prediction",
-            "bitsPerSample": 0.930847675933695,
-            "bitsPerBit": 0.930847675933695,
+            "bitsPerSample": 0.9266901574039228,
+            "bitsPerBit": 0.9266901574039228,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Predicts each sample from the one that occurred a fixed number of samples earlier, across many lags. Catches periodicity; blind to aperiodic dependence."
           },
           {
             "name": "MultiMMC Prediction",
-            "bitsPerSample": 0.6633697811906615,
-            "bitsPerBit": 0.6633697811906615,
+            "bitsPerSample": 0.664936996751351,
+            "bitsPerBit": 0.664936996751351,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Maintains Markov models of orders 1 through 16 with counting and bounds entropy from the best predictor. Catches finite-order dependence up to order 16."
           },
           {
             "name": "LZ78Y Prediction",
-            "bitsPerSample": 0.666974100719339,
-            "bitsPerBit": 0.666974100719339,
+            "bitsPerSample": 0.6683596691906037,
+            "bitsPerBit": 0.6683596691906037,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Builds an LZ78Y dictionary of observed strings and predicts the next sample from it. Catches dictionary-compressible structure."
           }
         ],
         "overall": {
-          "hOriginal": 0.37251857738330657,
+          "hOriginal": 0.3726245081302937,
           "hBitstring": null,
-          "hAssessed": 0.37251857738330657,
+          "hAssessed": 0.3726245081302937,
           "dataWordSize": 1,
-          "assessedBitsPerBit": 0.37251857738330657
+          "assessedBitsPerBit": 0.3726245081302937
         },
         "partial": false,
         "belowMinimum": false
@@ -158,9 +158,9 @@
         "conversion": "node scripts/unpack-bits.ts fixtures/fault-stuck-bit.bin 1000000 msb-first fault-stuck-bit.samples.bin",
         "incompleteFinalSample": "n/a: the sample count is a multiple of 8, so no partial byte exists",
         "originalBytes": 125000,
-        "originalSha256": "0b2e16b4c1de383abd0f3b25be5f6fde336fdd8dbc3649e21971dc9a447b050a",
+        "originalSha256": "f784aa5bf19e1faa32192a136a765e490ca2a4ebc54eaa19b6b59137514b0529",
         "convertedBytes": 1000000,
-        "convertedSha256": "486ab54c9c74d9b5ea91bfe961f66ac013455d64a96904f54e034b03b7b61a28"
+        "convertedSha256": "f1d88b82abba52ac26890b58b9fb1dafa7e2887c2a825d7d1a45aa7b5b014715"
       },
       "download": "fixtures/fault-stuck-bit.bin",
       "assessment": {
@@ -178,14 +178,14 @@
         "exitCode": 0,
         "errorLevel": 0,
         "errorMessage": null,
-        "toolSha256": "486ab54c9c74d9b5ea91bfe961f66ac013455d64a96904f54e034b03b7b61a28",
+        "toolSha256": "f1d88b82abba52ac26890b58b9fb1dafa7e2887c2a825d7d1a45aa7b5b014715",
         "bitsPerSymbol": 1,
         "bitsPerSymbolInferred": false,
         "estimators": [
           {
             "name": "Most Common Value",
-            "bitsPerSample": 0.8267706923060641,
-            "bitsPerBit": 0.8267706923060641,
+            "bitsPerSample": 0.8266658143170454,
+            "bitsPerBit": 0.8266658143170454,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Assumes the samples are independent and identically distributed, and bounds the probability of the single most likely value with a 99% upper confidence limit. Any structure across samples is invisible to it."
@@ -200,75 +200,75 @@
           },
           {
             "name": "Markov",
-            "bitsPerSample": 0.7375172968306142,
-            "bitsPerBit": 0.7375172968306142,
+            "bitsPerSample": 0.7362928200830274,
+            "bitsPerBit": 0.7362928200830274,
             "bitstringOnly": true,
             "declined": false,
             "assumption": "Assumes a first-order Markov chain and bounds the most likely path of 128 samples. Dependence reaching further back than one sample is outside the model."
           },
           {
             "name": "Compression",
-            "bitsPerSample": 0.4053753140619158,
-            "bitsPerBit": 0.4053753140619158,
+            "bitsPerSample": 0.4035808764186186,
+            "bitsPerBit": 0.4035808764186186,
             "bitstringOnly": true,
             "declined": false,
             "assumption": "Assumes nothing about the distribution, and bounds entropy from how well a Maurer-style compression of the bit string does. Sensitive to repetition, blind to arithmetic structure."
           },
           {
             "name": "T-Tuple",
-            "bitsPerSample": 0.7474134152294611,
-            "bitsPerBit": 0.7474134152294611,
+            "bitsPerSample": 0.7504431240820103,
+            "bitsPerBit": 0.7504431240820103,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Assumes nothing about independence, and bounds entropy from the frequency of the most common short tuple. Only sees patterns up to the longest repeated tuple it finds."
           },
           {
             "name": "LRS",
-            "bitsPerSample": 0.8439103845962543,
-            "bitsPerBit": 0.8439103845962543,
+            "bitsPerSample": 0.8558272540943054,
+            "bitsPerBit": 0.8558272540943054,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Assumes nothing about independence, and bounds entropy using the longest repeated substring. Complements T-Tuple at longer lengths."
           },
           {
             "name": "MultiMCW Prediction",
-            "bitsPerSample": 0.8271276680024937,
-            "bitsPerBit": 0.8271276680024937,
+            "bitsPerSample": 0.8270841675455399,
+            "bitsPerBit": 0.8270841675455399,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Runs four sliding-window majority predictors and bounds entropy from how well the best one guesses the next sample. Catches local bias; cannot catch structure no window sees."
           },
           {
             "name": "Lag Prediction",
-            "bitsPerSample": 0.8266643737235883,
-            "bitsPerBit": 0.8266643737235883,
+            "bitsPerSample": 0.8268229726682688,
+            "bitsPerBit": 0.8268229726682688,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Predicts each sample from the one that occurred a fixed number of samples earlier, across many lags. Catches periodicity; blind to aperiodic dependence."
           },
           {
             "name": "MultiMMC Prediction",
-            "bitsPerSample": 0.6554229806148587,
-            "bitsPerBit": 0.6554229806148587,
+            "bitsPerSample": 0.6520911314468345,
+            "bitsPerBit": 0.6520911314468345,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Maintains Markov models of orders 1 through 16 with counting and bounds entropy from the best predictor. Catches finite-order dependence up to order 16."
           },
           {
             "name": "LZ78Y Prediction",
-            "bitsPerSample": 0.7436943051371709,
-            "bitsPerBit": 0.7436943051371709,
+            "bitsPerSample": 0.7424851206862128,
+            "bitsPerBit": 0.7424851206862128,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Builds an LZ78Y dictionary of observed strings and predicts the next sample from it. Catches dictionary-compressible structure."
           }
         ],
         "overall": {
-          "hOriginal": 0.4053753140619158,
+          "hOriginal": 0.4035808764186186,
           "hBitstring": null,
-          "hAssessed": 0.4053753140619158,
+          "hAssessed": 0.4035808764186186,
           "dataWordSize": 1,
-          "assessedBitsPerBit": 0.4053753140619158
+          "assessedBitsPerBit": 0.4035808764186186
         },
         "partial": false,
         "belowMinimum": false
@@ -293,9 +293,9 @@
         "conversion": "node scripts/unpack-bits.ts fixtures/fault-bias.bin 1000000 msb-first fault-bias.samples.bin",
         "incompleteFinalSample": "n/a: the sample count is a multiple of 8, so no partial byte exists",
         "originalBytes": 125000,
-        "originalSha256": "61422727efef8850f8704dd1241b245d031e6190d7bd3ae3651fc2472a0ad422",
+        "originalSha256": "7f4d97a838dca1c01f5006b722e8d7720d4476aeb0667454da91e83fba45d4a6",
         "convertedBytes": 1000000,
-        "convertedSha256": "e9eaffe8403744d7e39874b1a207afcf04f16660969f2916fc45b7fee47eb6a0"
+        "convertedSha256": "e909647d1bd78488f9d4ca19fc14fd3b751ac8d17b1ddf3b488f98ae4f69e3e8"
       },
       "download": "fixtures/fault-bias.bin",
       "assessment": {
@@ -313,97 +313,97 @@
         "exitCode": 0,
         "errorLevel": 0,
         "errorMessage": null,
-        "toolSha256": "e9eaffe8403744d7e39874b1a207afcf04f16660969f2916fc45b7fee47eb6a0",
+        "toolSha256": "e909647d1bd78488f9d4ca19fc14fd3b751ac8d17b1ddf3b488f98ae4f69e3e8",
         "bitsPerSymbol": 1,
         "bitsPerSymbolInferred": false,
         "estimators": [
           {
             "name": "Most Common Value",
-            "bitsPerSample": 0.386871513775914,
-            "bitsPerBit": 0.386871513775914,
+            "bitsPerSample": 0.38801518568988363,
+            "bitsPerBit": 0.38801518568988363,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Assumes the samples are independent and identically distributed, and bounds the probability of the single most likely value with a 99% upper confidence limit. Any structure across samples is invisible to it."
           },
           {
             "name": "Collision",
-            "bitsPerSample": 0.3715319966231499,
-            "bitsPerBit": 0.3715319966231499,
+            "bitsPerSample": 0.3720142228402195,
+            "bitsPerBit": 0.3720142228402195,
             "bitstringOnly": true,
             "declined": false,
             "assumption": "Assumes an i.i.d. source and infers the collision probability from how many samples pass before a repeat. Only defined for binary inputs."
           },
           {
             "name": "Markov",
-            "bitsPerSample": 0.4195979854728918,
-            "bitsPerBit": 0.4195979854728918,
+            "bitsPerSample": 0.42059918722867734,
+            "bitsPerBit": 0.42059918722867734,
             "bitstringOnly": true,
             "declined": false,
             "assumption": "Assumes a first-order Markov chain and bounds the most likely path of 128 samples. Dependence reaching further back than one sample is outside the model."
           },
           {
             "name": "Compression",
-            "bitsPerSample": 0.20745607925462928,
-            "bitsPerBit": 0.20745607925462928,
+            "bitsPerSample": 0.20801174020216204,
+            "bitsPerBit": 0.20801174020216204,
             "bitstringOnly": true,
             "declined": false,
             "assumption": "Assumes nothing about the distribution, and bounds entropy from how well a Maurer-style compression of the bit string does. Sensitive to repetition, blind to arithmetic structure."
           },
           {
             "name": "T-Tuple",
-            "bitsPerSample": 0.313432082168413,
-            "bitsPerBit": 0.313432082168413,
+            "bitsPerSample": 0.3142484212364717,
+            "bitsPerBit": 0.3142484212364717,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Assumes nothing about independence, and bounds entropy from the frequency of the most common short tuple. Only sees patterns up to the longest repeated tuple it finds."
           },
           {
             "name": "LRS",
-            "bitsPerSample": 0.5853840400000468,
-            "bitsPerBit": 0.5853840400000468,
+            "bitsPerSample": 0.6012435529827082,
+            "bitsPerBit": 0.6012435529827082,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Assumes nothing about independence, and bounds entropy using the longest repeated substring. Complements T-Tuple at longer lengths."
           },
           {
             "name": "MultiMCW Prediction",
-            "bitsPerSample": 0.3868712366755809,
-            "bitsPerBit": 0.3868712366755809,
+            "bitsPerSample": 0.3880074403817398,
+            "bitsPerBit": 0.3880074403817398,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Runs four sliding-window majority predictors and bounds entropy from how well the best one guesses the next sample. Catches local bias; cannot catch structure no window sees."
           },
           {
             "name": "Lag Prediction",
-            "bitsPerSample": 0.5870344982356104,
-            "bitsPerBit": 0.5870344982356104,
+            "bitsPerSample": 0.5872272148688228,
+            "bitsPerBit": 0.5872272148688228,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Predicts each sample from the one that occurred a fixed number of samples earlier, across many lags. Catches periodicity; blind to aperiodic dependence."
           },
           {
             "name": "MultiMMC Prediction",
-            "bitsPerSample": 0.38687428522551426,
-            "bitsPerBit": 0.38687428522551426,
+            "bitsPerSample": 0.3880179616379689,
+            "bitsPerBit": 0.3880179616379689,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Maintains Markov models of orders 1 through 16 with counting and bounds entropy from the best predictor. Catches finite-order dependence up to order 16."
           },
           {
             "name": "LZ78Y Prediction",
-            "bitsPerSample": 0.3868790623878016,
-            "bitsPerBit": 0.3868790623878016,
+            "bitsPerSample": 0.38802275976187484,
+            "bitsPerBit": 0.38802275976187484,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Builds an LZ78Y dictionary of observed strings and predicts the next sample from it. Catches dictionary-compressible structure."
           }
         ],
         "overall": {
-          "hOriginal": 0.20745607925462928,
+          "hOriginal": 0.20801174020216204,
           "hBitstring": null,
-          "hAssessed": 0.20745607925462928,
+          "hAssessed": 0.20801174020216204,
           "dataWordSize": 1,
-          "assessedBitsPerBit": 0.20745607925462928
+          "assessedBitsPerBit": 0.20801174020216204
         },
         "partial": false,
         "belowMinimum": false
@@ -428,9 +428,9 @@
         "conversion": "node scripts/unpack-bits.ts fixtures/fault-periodic.bin 1000000 msb-first fault-periodic.samples.bin",
         "incompleteFinalSample": "n/a: the sample count is a multiple of 8, so no partial byte exists",
         "originalBytes": 125000,
-        "originalSha256": "0e60063008088c36a1a376234874e4226f13c2d646eedf4f74bb75232f96d195",
+        "originalSha256": "08995f47a4c739c651d16f1caf2daba9397b9dc78b3e74532917e5b36c571cc3",
         "convertedBytes": 1000000,
-        "convertedSha256": "a3f60727d6c1a4731a7712c662fcdfbc5636c13405a20c77fb7025a91a739604"
+        "convertedSha256": "47d340b47318c34a983438e355b30ef2250285dc4a503402e996a76c77b322b0"
       },
       "download": "fixtures/fault-periodic.bin",
       "assessment": {
@@ -448,14 +448,14 @@
         "exitCode": 0,
         "errorLevel": 0,
         "errorMessage": null,
-        "toolSha256": "a3f60727d6c1a4731a7712c662fcdfbc5636c13405a20c77fb7025a91a739604",
+        "toolSha256": "47d340b47318c34a983438e355b30ef2250285dc4a503402e996a76c77b322b0",
         "bitsPerSymbol": 1,
         "bitsPerSymbolInferred": false,
         "estimators": [
           {
             "name": "Most Common Value",
-            "bitsPerSample": 0.9701960343420859,
-            "bitsPerBit": 0.9701960343420859,
+            "bitsPerSample": 0.9678323967784638,
+            "bitsPerBit": 0.9678323967784638,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Assumes the samples are independent and identically distributed, and bounds the probability of the single most likely value with a 99% upper confidence limit. Any structure across samples is invisible to it."
@@ -470,75 +470,75 @@
           },
           {
             "name": "Markov",
-            "bitsPerSample": 0.8284252062949594,
-            "bitsPerBit": 0.8284252062949594,
+            "bitsPerSample": 0.8266054679328863,
+            "bitsPerBit": 0.8266054679328863,
             "bitstringOnly": true,
             "declined": false,
             "assumption": "Assumes a first-order Markov chain and bounds the most likely path of 128 samples. Dependence reaching further back than one sample is outside the model."
           },
           {
             "name": "Compression",
-            "bitsPerSample": 0.6311791306562847,
-            "bitsPerBit": 0.6311791306562847,
+            "bitsPerSample": 0.6187469243303984,
+            "bitsPerBit": 0.6187469243303984,
             "bitstringOnly": true,
             "declined": false,
             "assumption": "Assumes nothing about the distribution, and bounds entropy from how well a Maurer-style compression of the bit string does. Sensitive to repetition, blind to arithmetic structure."
           },
           {
             "name": "T-Tuple",
-            "bitsPerSample": 0.8125199821612713,
-            "bitsPerBit": 0.8125199821612713,
+            "bitsPerSample": 0.8162564673846692,
+            "bitsPerBit": 0.8162564673846692,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Assumes nothing about independence, and bounds entropy from the frequency of the most common short tuple. Only sees patterns up to the longest repeated tuple it finds."
           },
           {
             "name": "LRS",
-            "bitsPerSample": 0.7981705542551453,
-            "bitsPerBit": 0.7981705542551453,
+            "bitsPerSample": 0.7734910461161927,
+            "bitsPerBit": 0.7734910461161927,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Assumes nothing about independence, and bounds entropy using the longest repeated substring. Complements T-Tuple at longer lengths."
           },
           {
             "name": "MultiMCW Prediction",
-            "bitsPerSample": 0.9785579468644079,
-            "bitsPerBit": 0.9785579468644079,
+            "bitsPerSample": 0.975800124382745,
+            "bitsPerBit": 0.975800124382745,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Runs four sliding-window majority predictors and bounds entropy from how well the best one guesses the next sample. Catches local bias; cannot catch structure no window sees."
           },
           {
             "name": "Lag Prediction",
-            "bitsPerSample": 0.676056099073681,
-            "bitsPerBit": 0.676056099073681,
+            "bitsPerSample": 0.6750497942636101,
+            "bitsPerBit": 0.6750497942636101,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Predicts each sample from the one that occurred a fixed number of samples earlier, across many lags. Catches periodicity; blind to aperiodic dependence."
           },
           {
             "name": "MultiMMC Prediction",
-            "bitsPerSample": 0.7985266997131237,
-            "bitsPerBit": 0.7985266997131237,
+            "bitsPerSample": 0.7982357598015076,
+            "bitsPerBit": 0.7982357598015076,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Maintains Markov models of orders 1 through 16 with counting and bounds entropy from the best predictor. Catches finite-order dependence up to order 16."
           },
           {
             "name": "LZ78Y Prediction",
-            "bitsPerSample": 0.8240550492159913,
-            "bitsPerBit": 0.8240550492159913,
+            "bitsPerSample": 0.822294342410476,
+            "bitsPerBit": 0.822294342410476,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Builds an LZ78Y dictionary of observed strings and predicts the next sample from it. Catches dictionary-compressible structure."
           }
         ],
         "overall": {
-          "hOriginal": 0.6311791306562847,
+          "hOriginal": 0.6187469243303984,
           "hBitstring": null,
-          "hAssessed": 0.6311791306562847,
+          "hAssessed": 0.6187469243303984,
           "dataWordSize": 1,
-          "assessedBitsPerBit": 0.6311791306562847
+          "assessedBitsPerBit": 0.6187469243303984
         },
         "partial": false,
         "belowMinimum": false
@@ -563,9 +563,9 @@
         "conversion": "node scripts/unpack-bits.ts fixtures/fault-repeated-block.bin 1000000 msb-first fault-repeated-block.samples.bin",
         "incompleteFinalSample": "n/a: the sample count is a multiple of 8, so no partial byte exists",
         "originalBytes": 125000,
-        "originalSha256": "2c0d22678825b6c6741e3c8eda10a7fe09cb37eb6d81b93d0d7fe33793ab42aa",
+        "originalSha256": "ddfde5de87a9b269fc8b10eed681f6253fe50c377a29f0bcdd425f1ccc031f65",
         "convertedBytes": 1000000,
-        "convertedSha256": "ec1bdfcf5dd71ceb48686e3a6a8a02a41cd13e1b9d6338400a05109804519175"
+        "convertedSha256": "ae01ff6b48d417e873a3d4dec3b97200712449e2b041557ba12c5b0af218a791"
       },
       "download": "fixtures/fault-repeated-block.bin",
       "assessment": {
@@ -583,14 +583,14 @@
         "exitCode": 0,
         "errorLevel": 0,
         "errorMessage": null,
-        "toolSha256": "ec1bdfcf5dd71ceb48686e3a6a8a02a41cd13e1b9d6338400a05109804519175",
+        "toolSha256": "ae01ff6b48d417e873a3d4dec3b97200712449e2b041557ba12c5b0af218a791",
         "bitsPerSymbol": 1,
         "bitsPerSymbolInferred": false,
         "estimators": [
           {
             "name": "Most Common Value",
-            "bitsPerSample": 0.9944479124545563,
-            "bitsPerBit": 0.9944479124545563,
+            "bitsPerSample": 0.9953248404249353,
+            "bitsPerBit": 0.9953248404249353,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Assumes the samples are independent and identically distributed, and bounds the probability of the single most likely value with a 99% upper confidence limit. Any structure across samples is invisible to it."
@@ -605,16 +605,16 @@
           },
           {
             "name": "Markov",
-            "bitsPerSample": 0.6753492115806083,
-            "bitsPerBit": 0.6753492115806083,
+            "bitsPerSample": 0.6763202015752933,
+            "bitsPerBit": 0.6763202015752933,
             "bitstringOnly": true,
             "declined": false,
             "assumption": "Assumes a first-order Markov chain and bounds the most likely path of 128 samples. Dependence reaching further back than one sample is outside the model."
           },
           {
             "name": "Compression",
-            "bitsPerSample": 0.3721188122530263,
-            "bitsPerBit": 0.3721188122530263,
+            "bitsPerSample": 0.3727447403350046,
+            "bitsPerBit": 0.3727447403350046,
             "bitstringOnly": true,
             "declined": false,
             "assumption": "Assumes nothing about the distribution, and bounds entropy from how well a Maurer-style compression of the bit string does. Sensitive to repetition, blind to arithmetic structure."
@@ -645,24 +645,24 @@
           },
           {
             "name": "Lag Prediction",
-            "bitsPerSample": 0.9262871272819085,
-            "bitsPerBit": 0.9262871272819085,
+            "bitsPerSample": 0.9276337441780395,
+            "bitsPerBit": 0.9276337441780395,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Predicts each sample from the one that occurred a fixed number of samples earlier, across many lags. Catches periodicity; blind to aperiodic dependence."
           },
           {
             "name": "MultiMMC Prediction",
-            "bitsPerSample": 0.5256128148025142,
-            "bitsPerBit": 0.5256128148025142,
+            "bitsPerSample": 0.5264325091963444,
+            "bitsPerBit": 0.5264325091963444,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Maintains Markov models of orders 1 through 16 with counting and bounds entropy from the best predictor. Catches finite-order dependence up to order 16."
           },
           {
             "name": "LZ78Y Prediction",
-            "bitsPerSample": 0.6699438299622574,
-            "bitsPerBit": 0.6699438299622574,
+            "bitsPerSample": 0.6709167414594484,
+            "bitsPerBit": 0.6709167414594484,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Builds an LZ78Y dictionary of observed strings and predicts the next sample from it. Catches dictionary-compressible structure."
@@ -833,9 +833,9 @@
         "conversion": "node scripts/unpack-bits.ts fixtures/exploratory-short.bin 50000 msb-first exploratory-short.samples.bin",
         "incompleteFinalSample": "n/a: the sample count is a multiple of 8, so no partial byte exists",
         "originalBytes": 6250,
-        "originalSha256": "bf450109c78aba22bd0f573f0ed4d8385c8edc021538f08838123721d235ddeb",
+        "originalSha256": "df588f85ebf790931ca0a6ed1b215a78f43995ea019698af0601c4caedd06f04",
         "convertedBytes": 50000,
-        "convertedSha256": "256234a1728d5cd944fa7fc121b141da25fd2e686f8b4e1aa278e479106a1b0a"
+        "convertedSha256": "cce021a9c63b3adcfc85ff1663ccb1bf6d816beab830ce72af5391f7d34f95b2"
       },
       "download": "fixtures/exploratory-short.bin",
       "assessment": {
@@ -853,7 +853,7 @@
         "exitCode": 255,
         "errorLevel": -1,
         "errorMessage": "Error: dataset contains 50000 samples; SP 800-90B Section 3.1.1 requires at least 1000000.",
-        "toolSha256": "256234a1728d5cd944fa7fc121b141da25fd2e686f8b4e1aa278e479106a1b0a",
+        "toolSha256": "cce021a9c63b3adcfc85ff1663ccb1bf6d816beab830ce72af5391f7d34f95b2",
         "bitsPerSymbol": 1,
         "bitsPerSymbolInferred": false,
         "estimators": [
@@ -1226,9 +1226,9 @@
         "conversion": "none: the shipped file is already one sample per byte",
         "incompleteFinalSample": "n/a: the sample count is a multiple of 8, so no partial byte exists",
         "originalBytes": 1000000,
-        "originalSha256": "07d583cf8d6176270592ed340b74bed93439aa529aa26e778557f23111951ad3",
+        "originalSha256": "02ca37d8dc15b8cbe9718d89dca315d72178ca15ad1bdcb550280c00beeb89e2",
         "convertedBytes": 1000000,
-        "convertedSha256": "07d583cf8d6176270592ed340b74bed93439aa529aa26e778557f23111951ad3"
+        "convertedSha256": "02ca37d8dc15b8cbe9718d89dca315d72178ca15ad1bdcb550280c00beeb89e2"
       },
       "download": "fixtures/inm-conditioned-keccak.bin",
       "assessment": {
@@ -1246,14 +1246,14 @@
         "exitCode": 0,
         "errorLevel": 0,
         "errorMessage": null,
-        "toolSha256": "07d583cf8d6176270592ed340b74bed93439aa529aa26e778557f23111951ad3",
+        "toolSha256": "02ca37d8dc15b8cbe9718d89dca315d72178ca15ad1bdcb550280c00beeb89e2",
         "bitsPerSymbol": 8,
         "bitsPerSymbolInferred": false,
         "estimators": [
           {
             "name": "Most Common Value",
-            "bitsPerSample": 7.8678651969850355,
-            "bitsPerBit": 0.9981495700995151,
+            "bitsPerSample": 7.86408916587611,
+            "bitsPerBit": 0.9984247978286757,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Assumes the samples are independent and identically distributed, and bounds the probability of the single most likely value with a 99% upper confidence limit. Any structure across samples is invisible to it."
@@ -1261,7 +1261,7 @@
           {
             "name": "Collision",
             "bitsPerSample": null,
-            "bitsPerBit": 0.9389217367854193,
+            "bitsPerBit": 0.951154483485816,
             "bitstringOnly": true,
             "declined": false,
             "assumption": "Assumes an i.i.d. source and infers the collision probability from how many samples pass before a repeat. Only defined for binary inputs."
@@ -1269,7 +1269,7 @@
           {
             "name": "Markov",
             "bitsPerSample": null,
-            "bitsPerBit": 0.9988876460437601,
+            "bitsPerBit": 0.9997693414997941,
             "bitstringOnly": true,
             "declined": false,
             "assumption": "Assumes a first-order Markov chain and bounds the most likely path of 128 samples. Dependence reaching further back than one sample is outside the model."
@@ -1277,66 +1277,66 @@
           {
             "name": "Compression",
             "bitsPerSample": null,
-            "bitsPerBit": 0.9212335301342027,
+            "bitsPerBit": 0.91279862203349,
             "bitstringOnly": true,
             "declined": false,
             "assumption": "Assumes nothing about the distribution, and bounds entropy from how well a Maurer-style compression of the bit string does. Sensitive to repetition, blind to arithmetic structure."
           },
           {
             "name": "T-Tuple",
-            "bitsPerSample": 7.8678651969850355,
-            "bitsPerBit": 0.9314906991730904,
+            "bitsPerSample": 7.86408916587611,
+            "bitsPerBit": 0.9335692443037779,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Assumes nothing about independence, and bounds entropy from the frequency of the most common short tuple. Only sees patterns up to the longest repeated tuple it finds."
           },
           {
             "name": "LRS",
-            "bitsPerSample": 7.718814129976409,
-            "bitsPerBit": 0.9695623024372269,
+            "bitsPerSample": 7.93976558287326,
+            "bitsPerBit": 0.9985322295786236,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Assumes nothing about independence, and bounds entropy using the longest repeated substring. Complements T-Tuple at longer lengths."
           },
           {
             "name": "MultiMCW Prediction",
-            "bitsPerSample": 7.907860564683567,
-            "bitsPerBit": 0.999192217403358,
+            "bitsPerSample": 7.944744803971533,
+            "bitsPerBit": 0.9984728891747163,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Runs four sliding-window majority predictors and bounds entropy from how well the best one guesses the next sample. Catches local bias; cannot catch structure no window sees."
           },
           {
             "name": "Lag Prediction",
-            "bitsPerSample": 7.941211203450583,
-            "bitsPerBit": 0.9845717619767975,
+            "bitsPerSample": 7.957221815958245,
+            "bitsPerBit": 0.9986335951890056,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Predicts each sample from the one that occurred a fixed number of samples earlier, across many lags. Catches periodicity; blind to aperiodic dependence."
           },
           {
             "name": "MultiMMC Prediction",
-            "bitsPerSample": 6.6384047962445925,
-            "bitsPerBit": 0.9988683707774537,
+            "bitsPerSample": 7.943020133534404,
+            "bitsPerBit": 0.9979176123138267,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Maintains Markov models of orders 1 through 16 with counting and bounds entropy from the best predictor. Catches finite-order dependence up to order 16."
           },
           {
             "name": "LZ78Y Prediction",
-            "bitsPerSample": 6.63839937057517,
-            "bitsPerBit": 0.9984530782041963,
+            "bitsPerSample": 7.9422740700524335,
+            "bitsPerBit": 0.9991896949645298,
             "bitstringOnly": false,
             "declined": false,
             "assumption": "Builds an LZ78Y dictionary of observed strings and predicts the next sample from it. Catches dictionary-compressible structure."
           }
         ],
         "overall": {
-          "hOriginal": 6.63839937057517,
-          "hBitstring": 0.9212335301342027,
-          "hAssessed": 6.63839937057517,
+          "hOriginal": 7.86408916587611,
+          "hBitstring": 0.91279862203349,
+          "hAssessed": 7.30238897626792,
           "dataWordSize": 8,
-          "assessedBitsPerBit": 0.8297999213218963
+          "assessedBitsPerBit": 0.91279862203349
         },
         "partial": false,
         "belowMinimum": false

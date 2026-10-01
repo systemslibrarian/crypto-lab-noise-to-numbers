@@ -69,14 +69,14 @@ describe('the modular-multiplication loop', () => {
 
   it('is roughly balanced at the circuit threshold and skewed away from it', () => {
     const fair = generateInmSamples(200_000, xoshiro128ss(11), INM_DEFAULTS);
-    // Measured p(1) across seeds 5/11/42: 0.49961, 0.49917, 0.50006.
+    // Measured p(1) across seeds 5/11/42: 0.50052, 0.49888, 0.49985.
     expect(bitBalance(fair, 1)).toBeGreaterThan(0.49);
     expect(bitBalance(fair, 1)).toBeLessThan(0.51);
     // Moving the threshold UP biases the output toward ONE, which is the
     // opposite of the obvious guess and worth having a test say out loud.
     // The zero branch multiplies by K without the fold-down the one branch
     // applies, so widening it pushes the state back above the threshold
-    // faster than it holds it below. Measured p(1) at threshold 0.58: 0.764.
+    // faster than it holds it below. Measured p(1) at threshold 0.58: 0.763.
     const skewed = generateInmSamples(200_000, xoshiro128ss(11), { ...INM_DEFAULTS, threshold: 0.58 });
     expect(bitBalance(skewed, 1)).toBeGreaterThan(0.7);
     // The claim the fault fixture actually rests on: the output is further
@@ -107,8 +107,8 @@ describe('the modular-multiplication loop', () => {
     const s = generateInmSamples(200_000, xoshiro128ss(5));
     // MEASURED, and the direction is worth stating because it is not the one
     // most readers assume: this map's adjacent samples are ANTI-correlated.
-    // lag-1 r is -0.255 / -0.259 / -0.258 across seeds 5/11/42, and lag-2 is
-    // about -0.130. Negative correlation is still correlation, and it is still
+    // lag-1 r is -0.256 / -0.256 / -0.256 across seeds 5/11/42, and lag-2 is
+    // about -0.131. Negative correlation is still correlation, and it is still
     // enough to disqualify the IID track. The magnitude is asserted, not the
     // sign-free hope that "adjacent bits agree more often".
     const r1 = autocorrelation(s, 1);
@@ -119,11 +119,11 @@ describe('the modular-multiplication loop', () => {
 
   /**
    * The one deliberate divergence from the vendor's own simulation is the
-   * noise SHAPE: Gaussian here, uniform there. Measured side by side, the
-   * correlation structure is the map's property and not the noise's:
-   * uniform gives lag-1 -0.262 / -0.257 against Gaussian's -0.255 / -0.259.
-   * So the divergence is documented, and it is also shown not to be what
-   * produces the lab's central observation.
+   * noise SHAPE: bell-shaped here, uniform there. Measured side by side, the
+   * correlation structure is the map's property and not the noise's: uniform
+   * gives lag-1 -0.262 against the model's -0.256. So the divergence is
+   * documented, and it is also shown not to be what produces the lab's
+   * central observation.
    */
   it('shows the correlation comes from the map, not from the noise shape', () => {
     const gaussian = generateInmSamples(200_000, xoshiro128ss(5), INM_DEFAULTS);
