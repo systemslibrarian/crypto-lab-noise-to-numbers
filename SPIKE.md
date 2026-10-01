@@ -190,7 +190,7 @@ from "a browser engine validated against native" — this section is what that
 validation has to establish.
 
 **Measuring it is the next step**, and it is not done here: it needs the WASM
-build to exist. The experiment is well defined — run both engines over all nine
+build to exist. The experiment is well defined — run both engines over all ten
 fixtures and record the maximum relative delta per estimator — and the
 reference comparison already exists in `cpp/selftest/compareresults.pl`.
 
@@ -203,7 +203,7 @@ reference comparison already exists in `cpp/selftest/compareresults.pl`.
 1. **1-bit engine first.** 19.9 MB and sub-second. It covers every raw-noise
    fixture this lab has and every capture v2 will add, because the device
    emits bits.
-2. **Measure the float deltas** against the native tool over all nine fixtures
+2. **Measure the float deltas** against the native tool over all ten fixtures
    before any figure is shown. Publish the tolerance.
 3. **8-bit engine behind a declared memory budget**, failing closed before
    allocation rather than crashing the tab.
@@ -278,11 +278,12 @@ rather than assumed:
   bit, the MultiMMC estimate **rises**. Because the reported figure is a
   minimum, an input on which MultiMMC was the binding minimum reports a HIGHER
   figure after this change. MultiMMC is not the binding estimator on any of
-  this lab's nine fixtures: Compression binds on five (`inm-clean`,
+  this lab's ten fixtures: Compression binds on five (`inm-clean`,
   `fault-stuck-bit`, `fault-bias`, `fault-periodic`, `fault-predictable`), LRS
   on one (`fault-repeated-block`), T-Tuple on `counter-hash-sha256` and LZ78Y
-  on `inm-conditioned-keccak`; the ninth has no assessment at all. All eight
-  bind through the literal branch. So no figure here is affected — which is a
+  on `inm-conditioned-keccak`. The remaining two — `exploratory-short` and
+  `all-zero` — have no assessment at all, because the tool refused both. All
+  eight that do bind through the literal branch. So no figure here is affected — which is a
   measured property of these fixtures rather than a general claim, and
   `fixtures.yml` would catch it changing.
 - **N-01** changes an IID *verdict*, not a min-entropy figure, and this lab

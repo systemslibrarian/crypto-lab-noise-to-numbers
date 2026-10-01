@@ -113,7 +113,7 @@ with its reason, its upstream issue and its validation in
 
 https://systemslibrarian.github.io/crypto-lab-noise-to-numbers/
 
-You can: step the circuit; analyse any of nine fixtures or your own file; read
+You can: step the circuit; analyse any of ten fixtures or your own file; read
 every estimator's figure and assumption; compare five faults against the clean
 stream; regenerate the "random-looking" counter-hash stream live in your
 browser from its published construction; drive the conditioning ledger; and
@@ -145,9 +145,12 @@ Each of these is a reachable state in the lab, not a hypothetical.
   the same source crossing the lab's "high" line purely by being conditioned.
 - **A fault that raises the number.** Act 4, measured. A rising figure is not
   evidence that nothing is wrong.
-- **An empty file, an all-zero file, a cancelled run, a file over the cap.**
-  Each has its own named state; none is silently treated as "zero entropy",
-  which is a different claim from "no evidence".
+- **An all-zero file.** `all-zero` meets the sample minimum and is still
+  refused, for a different reason than a short one: an alphabet of one symbol.
+  The lab shows both refusals, because they are different findings.
+- **An empty file, a cancelled run, a file over the cap.** Each has its own
+  named state; none is silently treated as "zero entropy", which is a different
+  claim from "no evidence".
 
 ---
 
@@ -184,7 +187,7 @@ npm run dev          # http://localhost:5173/crypto-lab-noise-to-numbers/
 Other scripts:
 
 ```sh
-npm test             # the unit and correctness suite (92 tests)
+npm test             # the unit and correctness suite (102 tests)
 npm run build        # type-check and build
 npm run test:claims  # the claims suite, against the production build
 npm run test:a11y    # the WCAG 2.1 A/AA gate, against the production build
@@ -241,7 +244,7 @@ npm run fixtures:verify   # regenerate and re-measure, failing on any disagreeme
 
 ## Build & Verify
 
-**92 unit tests** (Vitest), **23 claims tests** and **2 accessibility scans**
+**102 unit tests** (Vitest), **23 claims tests** and **2 accessibility scans**
 (Playwright), plus an independent fixture-verification job.
 
 | Check | What it establishes |
@@ -251,7 +254,7 @@ npm run fixtures:verify   # regenerate and re-measure, failing on any disagreeme
 | **Manifest validation** | `validateManifest()` fails closed on a figure attributed to a file whose hash does not match, an assessed value that is not the combination of its own estimators, a full run recorded against a below-minimum file, or an unflagged partial run. The page renders the failure instead of the lab. |
 | **Claims suite** (`e2e/claims.spec.ts`) | Every displayed figure matches its manifest entry; the descriptive statistics are **independently recomputed** from the fixture's own bytes by a different route; the counter-hash stream is regenerated with Node's crypto and compared against both the page's WebCrypto output and the shipped file; the fault table's movements are re-derived from their own two endpoints; and the headline threshold is read out of the source. |
 | **Negative claims** (§4.1d) | Each line of the honesty panel is a tested claim with an evidence fixture: a reachable state where every check the page performs reports success *and* the named property is violated anyway. |
-| **Mutation ledger** (`e2e/mutations.ts`, `scripts/mutate.mjs`) | 12 mutations recorded as concrete patches — file, a once-only anchor, its replacement, the owning test and the marker. A kill requires the owning test to have passed unmutated, the patch to have changed the file, the bundle hash to have moved, and the build to have succeeded. A run in which a ledger entry's check never executed **fails**. |
+| **Mutation ledger** (`e2e/mutations.ts`, `scripts/mutate.mjs`) | 12 mutations recorded as concrete patches — file, a once-only anchor, its replacement, the owning test and the marker. A kill requires the owning test to have passed unmutated, the patch to have changed the file, the bundle hash to have moved, and the build to have succeeded. **12 of 12 kill.** A run in which a ledger entry's check never executed **fails**. Two entries are owned by unit tests rather than the browser suite, because the branches they cover are unreachable through any fixture this lab can ship — which the mutation run is what established. |
 | **Independent fixture check** (`.github/workflows/fixtures.yml`) | Builds the pinned NIST tool from source, checks it against upstream's own pinned figure non-vacuously, regenerates every fixture from its generator, reruns every recorded command, and fails on any disagreement — every estimator, both branch minima, the exit status and the error message. This checks fixture *generation*, not just table-vs-fixture agreement. |
 | **Accessibility gate** | `@axe-core/playwright`, WCAG 2.1 A/AA, over the production build at desktop and 380px, driving every state the lab renders — including the refusals, the "assessment not run" state and the pad failure, which is where this lab's most important sentences live. Zero violations, zero unexplained `incomplete` results, arithmetic contrast over every text node including `aria-hidden` ones, a measured non-text-contrast oracle with an **empty** baseline, and reflow. |
 
@@ -268,7 +271,7 @@ requirement.
 | | |
 |---|---|
 | Page weight | ~110 kB JS (29 kB gzipped), ~11 kB CSS |
-| Fixtures | 9 files, 2.7 MB total, fetched on demand |
+| Fixtures | 10 files, 2.8 MB total, fetched on demand |
 | Descriptive analysis | 1,000,000 samples in a Web Worker, with progress and cancellation; 16 MB input cap |
 | Native assessment (not in the browser) | 0.21–0.27 s at 1 bit/sample, 5.1–5.5 s at 8 bits/sample; 19.9 MB and 325 MB peak RSS respectively — see [SPIKE.md](SPIKE.md) |
 
