@@ -239,10 +239,22 @@ material under `cpp/selftest/`.
 | `d240098` | Makefile: add Homebrew include/lib prefixes on Darwin | Locate the dependencies on macOS |
 | `06c693c` | Makefile: Apple clang + Homebrew libomp on Darwin | Apple clang rejects a bare `-fopenmp`; Homebrew GCC cannot link Homebrew's libc++-built jsoncpp |
 | `7ce69e9` | Makefile: default `ARCH` to host on Apple-silicon | Omits the x86-only `-march=native`, as upstream already does for any non-x86 `ARCH` |
+| `b75e763` | `cpp/shared/utils.h`: `#include <climits>` | **Found by this lab's CI.** The `-l` subset overflow check added in `0e1ffcd` uses `ULONG_MAX`, and the header never included `<climits>`. macOS builds anyway because libc++ pulls the declaration in transitively; **Linux with GCC does not, and `make non_iid` fails outright** — so the pinned tool did not build on the platform upstream names as its tested one. Reported and fixed upstream of this lab, in the fork. |
 
 `-std=c++11 -O2 -ffloat-store` are untouched, and no flag affecting
 floating-point semantics was added or removed. Non-Darwin command lines are
 unchanged.
+
+**On `b75e763` specifically**, because adding an include to a source file is
+not a Makefile change and the claim "no reported figure can change" has to be
+earned rather than asserted: the commit declares a macro that was already being
+used, so it alters no arithmetic, cut-off, rounding or confidence bound.
+Verified two ways — `pin-check.sh --prove-nonvacuous` still passes on
+`bin/ringOsc-nist.bin` and still fails on the perturbed input; and re-pinning
+this repository to the new commit changed exactly ten lines of
+`fixtures/manifest.json`, all of them the recorded `forkCommit`. Every
+estimator value, both branch minima, every assessed figure, every exit status
+and every error message was byte-identical.
 
 ### 9b. Estimator and program changes
 

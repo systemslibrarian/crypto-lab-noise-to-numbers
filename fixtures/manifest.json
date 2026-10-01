@@ -33,7 +33,7 @@
           "program": "ea_non_iid",
           "toolVersion": "1.1.8",
           "forkRepo": "https://github.com/systemslibrarian/SP800-90B_EntropyAssessment",
-          "forkCommit": "328ec20c146e43b4eed86424847a106539c70a5a",
+          "forkCommit": "b75e7633b1c8a2d49c4be0d13e3babd6ab0f292e",
           "upstreamBaseline": "87c104d0ed4cbc96103e7b8b38d6f2c7e0a6b289",
           "patched": true,
           "patchedBuildNote": "This is a PATCHED build, not NIST’s unmodified reference implementation. Every divergence from the upstream baseline is listed with its date, reason and upstream issue number in the fork’s NOTICE file. Two changes (F09 and N-01) alter results deliberately. See SPIKE.md."
@@ -168,7 +168,7 @@
           "program": "ea_non_iid",
           "toolVersion": "1.1.8",
           "forkRepo": "https://github.com/systemslibrarian/SP800-90B_EntropyAssessment",
-          "forkCommit": "328ec20c146e43b4eed86424847a106539c70a5a",
+          "forkCommit": "b75e7633b1c8a2d49c4be0d13e3babd6ab0f292e",
           "upstreamBaseline": "87c104d0ed4cbc96103e7b8b38d6f2c7e0a6b289",
           "patched": true,
           "patchedBuildNote": "This is a PATCHED build, not NIST’s unmodified reference implementation. Every divergence from the upstream baseline is listed with its date, reason and upstream issue number in the fork’s NOTICE file. Two changes (F09 and N-01) alter results deliberately. See SPIKE.md."
@@ -303,7 +303,7 @@
           "program": "ea_non_iid",
           "toolVersion": "1.1.8",
           "forkRepo": "https://github.com/systemslibrarian/SP800-90B_EntropyAssessment",
-          "forkCommit": "328ec20c146e43b4eed86424847a106539c70a5a",
+          "forkCommit": "b75e7633b1c8a2d49c4be0d13e3babd6ab0f292e",
           "upstreamBaseline": "87c104d0ed4cbc96103e7b8b38d6f2c7e0a6b289",
           "patched": true,
           "patchedBuildNote": "This is a PATCHED build, not NIST’s unmodified reference implementation. Every divergence from the upstream baseline is listed with its date, reason and upstream issue number in the fork’s NOTICE file. Two changes (F09 and N-01) alter results deliberately. See SPIKE.md."
@@ -438,7 +438,7 @@
           "program": "ea_non_iid",
           "toolVersion": "1.1.8",
           "forkRepo": "https://github.com/systemslibrarian/SP800-90B_EntropyAssessment",
-          "forkCommit": "328ec20c146e43b4eed86424847a106539c70a5a",
+          "forkCommit": "b75e7633b1c8a2d49c4be0d13e3babd6ab0f292e",
           "upstreamBaseline": "87c104d0ed4cbc96103e7b8b38d6f2c7e0a6b289",
           "patched": true,
           "patchedBuildNote": "This is a PATCHED build, not NIST’s unmodified reference implementation. Every divergence from the upstream baseline is listed with its date, reason and upstream issue number in the fork’s NOTICE file. Two changes (F09 and N-01) alter results deliberately. See SPIKE.md."
@@ -573,7 +573,7 @@
           "program": "ea_non_iid",
           "toolVersion": "1.1.8",
           "forkRepo": "https://github.com/systemslibrarian/SP800-90B_EntropyAssessment",
-          "forkCommit": "328ec20c146e43b4eed86424847a106539c70a5a",
+          "forkCommit": "b75e7633b1c8a2d49c4be0d13e3babd6ab0f292e",
           "upstreamBaseline": "87c104d0ed4cbc96103e7b8b38d6f2c7e0a6b289",
           "patched": true,
           "patchedBuildNote": "This is a PATCHED build, not NIST’s unmodified reference implementation. Every divergence from the upstream baseline is listed with its date, reason and upstream issue number in the fork’s NOTICE file. Two changes (F09 and N-01) alter results deliberately. See SPIKE.md."
@@ -708,7 +708,7 @@
           "program": "ea_non_iid",
           "toolVersion": "1.1.8",
           "forkRepo": "https://github.com/systemslibrarian/SP800-90B_EntropyAssessment",
-          "forkCommit": "328ec20c146e43b4eed86424847a106539c70a5a",
+          "forkCommit": "b75e7633b1c8a2d49c4be0d13e3babd6ab0f292e",
           "upstreamBaseline": "87c104d0ed4cbc96103e7b8b38d6f2c7e0a6b289",
           "patched": true,
           "patchedBuildNote": "This is a PATCHED build, not NIST’s unmodified reference implementation. Every divergence from the upstream baseline is listed with its date, reason and upstream issue number in the fork’s NOTICE file. Two changes (F09 and N-01) alter results deliberately. See SPIKE.md."
@@ -843,7 +843,7 @@
           "program": "ea_non_iid",
           "toolVersion": "1.1.8",
           "forkRepo": "https://github.com/systemslibrarian/SP800-90B_EntropyAssessment",
-          "forkCommit": "328ec20c146e43b4eed86424847a106539c70a5a",
+          "forkCommit": "b75e7633b1c8a2d49c4be0d13e3babd6ab0f292e",
           "upstreamBaseline": "87c104d0ed4cbc96103e7b8b38d6f2c7e0a6b289",
           "patched": true,
           "patchedBuildNote": "This is a PATCHED build, not NIST’s unmodified reference implementation. Every divergence from the upstream baseline is listed with its date, reason and upstream issue number in the fork’s NOTICE file. Two changes (F09 and N-01) alter results deliberately. See SPIKE.md."
@@ -972,7 +972,7 @@
           "program": "ea_non_iid",
           "toolVersion": "1.1.8",
           "forkRepo": "https://github.com/systemslibrarian/SP800-90B_EntropyAssessment",
-          "forkCommit": "328ec20c146e43b4eed86424847a106539c70a5a",
+          "forkCommit": "b75e7633b1c8a2d49c4be0d13e3babd6ab0f292e",
           "upstreamBaseline": "87c104d0ed4cbc96103e7b8b38d6f2c7e0a6b289",
           "patched": true,
           "patchedBuildNote": "This is a PATCHED build, not NIST’s unmodified reference implementation. Every divergence from the upstream baseline is listed with its date, reason and upstream issue number in the fork’s NOTICE file. Two changes (F09 and N-01) alter results deliberately. See SPIKE.md."
@@ -1101,7 +1101,7 @@
           "program": "ea_non_iid",
           "toolVersion": "1.1.8",
           "forkRepo": "https://github.com/systemslibrarian/SP800-90B_EntropyAssessment",
-          "forkCommit": "328ec20c146e43b4eed86424847a106539c70a5a",
+          "forkCommit": "b75e7633b1c8a2d49c4be0d13e3babd6ab0f292e",
           "upstreamBaseline": "87c104d0ed4cbc96103e7b8b38d6f2c7e0a6b289",
           "patched": true,
           "patchedBuildNote": "This is a PATCHED build, not NIST’s unmodified reference implementation. Every divergence from the upstream baseline is listed with its date, reason and upstream issue number in the fork’s NOTICE file. Two changes (F09 and N-01) alter results deliberately. See SPIKE.md."
@@ -1236,7 +1236,7 @@
           "program": "ea_non_iid",
           "toolVersion": "1.1.8",
           "forkRepo": "https://github.com/systemslibrarian/SP800-90B_EntropyAssessment",
-          "forkCommit": "328ec20c146e43b4eed86424847a106539c70a5a",
+          "forkCommit": "b75e7633b1c8a2d49c4be0d13e3babd6ab0f292e",
           "upstreamBaseline": "87c104d0ed4cbc96103e7b8b38d6f2c7e0a6b289",
           "patched": true,
           "patchedBuildNote": "This is a PATCHED build, not NIST’s unmodified reference implementation. Every divergence from the upstream baseline is listed with its date, reason and upstream issue number in the fork’s NOTICE file. Two changes (F09 and N-01) alter results deliberately. See SPIKE.md."
