@@ -307,3 +307,7 @@ these numbers — was false.
 *One of the browser demos in the [Crypto Lab](https://crypto-lab.systemslibrarian.dev/) suite.*
 
 *"So whether you eat or drink or whatever you do, do it all for the glory of God." — 1 Corinthians 10:31*
+
+## System construction bridge
+
+The live demo now links the [SP 800-90C final](https://csrc.nist.gov/pubs/sp/800/90/c/final) construction classes to source health, conditioning and fresh-input dependencies. DRBG Arena’s class chooser is a source-request model, not a validated RBG or a replacement for the existing compromise experiments.
