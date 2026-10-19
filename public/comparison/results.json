@@ -1,0 +1,720 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-19T04:11:35.630Z",
+  "sampleCount": 1000000,
+  "bitsPerSymbol": 1,
+  "platform": "linux x64",
+  "compiler": "gcc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0",
+  "tolerance": 1e-9,
+  "tools": [
+    {
+      "name": "NIST fork",
+      "repository": "https://github.com/systemslibrarian/SP800-90B_EntropyAssessment",
+      "commit": "a5005bd0107fd22fad88ad720c0c15d5de241eb0",
+      "executable": "cpp/ea_non_iid",
+      "binarySha256": "7eee1d2260624fbe94b1217bf83956a76b22da20c8538f6677c79d3bb8e5dfd3"
+    },
+    {
+      "name": "Theseus",
+      "repository": "https://github.com/KeyPair-Consulting/Theseus",
+      "commit": "b425767716b36079ebd9b1a2c1861143c8d8ae9c",
+      "executable": "src/non-iid-main",
+      "binarySha256": "62758dca0b3a4c819c6079a23afa0efc42f89d277a7d03b48b63e8da2a93894f"
+    }
+  ],
+  "runs": [
+    {
+      "id": "model-20261001",
+      "seed": 20261001,
+      "kind": "model",
+      "samples": 1000000,
+      "inputSha256": "b361399d746b69b6bc42dd2ab250f2193427c1c2c9172ff9e59a83b95f2d4cbb",
+      "packedSha256": "929b398a149c375eb313c10def5bcc9191cd8043f1bf7ff176fd88132f6716c0",
+      "download": "comparison/model-20261001.bin",
+      "commands": [
+        "ea_non_iid -i -a -o model-20261001.nist.json model-20261001.samples.bin 1",
+        "non-iid-main -r -d -s -v model-20261001.samples.bin"
+      ],
+      "logs": [
+        {
+          "file": "model-20261001.nist.json",
+          "sha256": "758cf5d4efcf6119b68ce65921b1b7f6ea3798e5acf2ca9344d6ee2b457b2db1"
+        },
+        {
+          "file": "model-20261001.theseus.txt",
+          "sha256": "39053d2b4e8e73633b17440d98a1919234e586fe5972492f689e75ab775f2b7d"
+        }
+      ],
+      "estimators": [
+        {
+          "name": "Most Common Value",
+          "values": [
+            0.9951752935995803,
+            0.9951752935995803
+          ]
+        },
+        {
+          "name": "Collision",
+          "values": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "Markov",
+          "values": [
+            0.6737762911537201,
+            0.6737762911537202
+          ]
+        },
+        {
+          "name": "Compression",
+          "values": [
+            0.3726245081302996,
+            0.3726245081302996
+          ]
+        },
+        {
+          "name": "T-Tuple",
+          "values": [
+            0.8045191400946508,
+            0.8045191400946508
+          ]
+        },
+        {
+          "name": "LRS",
+          "values": [
+            0.870015041807232,
+            0.870015041807232
+          ]
+        },
+        {
+          "name": "MultiMCW Prediction",
+          "values": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "Lag Prediction",
+          "values": [
+            0.9266901574039228,
+            0.9266901574039228
+          ]
+        },
+        {
+          "name": "MultiMMC Prediction",
+          "values": [
+            0.664936996751351,
+            0.664936996751351
+          ]
+        },
+        {
+          "name": "LZ78Y Prediction",
+          "values": [
+            0.6683596691906037,
+            0.6683596691906037
+          ]
+        }
+      ],
+      "overall": [
+        0.3726245081302996,
+        0.3726245081302996
+      ]
+    },
+    {
+      "id": "model-20261002",
+      "seed": 20261002,
+      "kind": "model",
+      "samples": 1000000,
+      "inputSha256": "5054de27890ad6169d6152a090d1ce74187ed4c6cfb8d2905ecf6cc7ace0b81f",
+      "packedSha256": "26f403dd90ac88fe8db61b633535f03c3d6ca8608143122267422b4cb3838e40",
+      "download": "comparison/model-20261002.bin",
+      "commands": [
+        "ea_non_iid -i -a -o model-20261002.nist.json model-20261002.samples.bin 1",
+        "non-iid-main -r -d -s -v model-20261002.samples.bin"
+      ],
+      "logs": [
+        {
+          "file": "model-20261002.nist.json",
+          "sha256": "f4991d47df5f373b8aa57a074b35c54f380f4a68c80eef9b00b7aa3c73a4dc56"
+        },
+        {
+          "file": "model-20261002.theseus.txt",
+          "sha256": "915bcc4a3f5cbca1d57044941456783f544d23824e1240746c432326d1edda82"
+        }
+      ],
+      "estimators": [
+        {
+          "name": "Most Common Value",
+          "values": [
+            0.9962253257487188,
+            0.9962253257487188
+          ]
+        },
+        {
+          "name": "Collision",
+          "values": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "Markov",
+          "values": [
+            0.6743352831573471,
+            0.6743352831573471
+          ]
+        },
+        {
+          "name": "Compression",
+          "values": [
+            0.37390414190019,
+            0.37390414190019
+          ]
+        },
+        {
+          "name": "T-Tuple",
+          "values": [
+            0.8045191400946508,
+            0.8045191400946508
+          ]
+        },
+        {
+          "name": "LRS",
+          "values": [
+            0.8684259484207499,
+            0.8684259484207499
+          ]
+        },
+        {
+          "name": "MultiMCW Prediction",
+          "values": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "Lag Prediction",
+          "values": [
+            0.9279712815567045,
+            0.9279712815567045
+          ]
+        },
+        {
+          "name": "MultiMMC Prediction",
+          "values": [
+            0.6643976452283485,
+            0.6643976452283485
+          ]
+        },
+        {
+          "name": "LZ78Y Prediction",
+          "values": [
+            0.6689257316978472,
+            0.6689257316978472
+          ]
+        }
+      ],
+      "overall": [
+        0.37390414190019,
+        0.37390414190019
+      ]
+    },
+    {
+      "id": "model-20261003",
+      "seed": 20261003,
+      "kind": "model",
+      "samples": 1000000,
+      "inputSha256": "bc8225523e4d56549fb7d3fe2f22b7883aad9e80b4e8a751e2700a3a401bcc30",
+      "packedSha256": "937866ab101fa76a2546f64f16d418227c749bf63569b7cbb1c07693e992233c",
+      "download": "comparison/model-20261003.bin",
+      "commands": [
+        "ea_non_iid -i -a -o model-20261003.nist.json model-20261003.samples.bin 1",
+        "non-iid-main -r -d -s -v model-20261003.samples.bin"
+      ],
+      "logs": [
+        {
+          "file": "model-20261003.nist.json",
+          "sha256": "7e8fbd1cade085d02afb2146cff1744bfdecfc832c0bece5133366f2946c4261"
+        },
+        {
+          "file": "model-20261003.theseus.txt",
+          "sha256": "9b8cd86140129b7955dd905c6d1b12f8f29e7ce3e0c963a5a93b5a0fbf4513ab"
+        }
+      ],
+      "estimators": [
+        {
+          "name": "Most Common Value",
+          "values": [
+            0.9956613776174335,
+            0.9956613776174335
+          ]
+        },
+        {
+          "name": "Collision",
+          "values": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "Markov",
+          "values": [
+            0.6729653397255787,
+            0.6729653397255787
+          ]
+        },
+        {
+          "name": "Compression",
+          "values": [
+            0.37280266167869563,
+            0.37280266167869563
+          ]
+        },
+        {
+          "name": "T-Tuple",
+          "values": [
+            0.8008002574415876,
+            0.8008002574415876
+          ]
+        },
+        {
+          "name": "LRS",
+          "values": [
+            0.8710588201734076,
+            0.8710588201734076
+          ]
+        },
+        {
+          "name": "MultiMCW Prediction",
+          "values": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "Lag Prediction",
+          "values": [
+            0.9284873454075937,
+            0.9284873454075937
+          ]
+        },
+        {
+          "name": "MultiMMC Prediction",
+          "values": [
+            0.6636026992989602,
+            0.6636026992989602
+          ]
+        },
+        {
+          "name": "LZ78Y Prediction",
+          "values": [
+            0.6675419077744871,
+            0.6675419077744871
+          ]
+        }
+      ],
+      "overall": [
+        0.37280266167869563,
+        0.37280266167869563
+      ]
+    },
+    {
+      "id": "model-20261004",
+      "seed": 20261004,
+      "kind": "model",
+      "samples": 1000000,
+      "inputSha256": "198dc88304c7d856d4c2cb8f1382bf4aaa2c6a5576ce1c795f71284dfcff4403",
+      "packedSha256": "ad8eaaf9e210d502a634de0e5213b4d036218efb5657da39130bf1bd4e305476",
+      "download": "comparison/model-20261004.bin",
+      "commands": [
+        "ea_non_iid -i -a -o model-20261004.nist.json model-20261004.samples.bin 1",
+        "non-iid-main -r -d -s -v model-20261004.samples.bin"
+      ],
+      "logs": [
+        {
+          "file": "model-20261004.nist.json",
+          "sha256": "affaaa502fac2cb084665b0052440c4e47ad9ff03661c05b15003009705bd15c"
+        },
+        {
+          "file": "model-20261004.theseus.txt",
+          "sha256": "2230fc0a88aefa37ccff840ac70345db9c2dbb280912849a1a4f753a66701d76"
+        }
+      ],
+      "estimators": [
+        {
+          "name": "Most Common Value",
+          "values": [
+            0.9957304206171473,
+            0.9957304206171473
+          ]
+        },
+        {
+          "name": "Collision",
+          "values": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "Markov",
+          "values": [
+            0.6738518361871836,
+            0.6738518361871837
+          ]
+        },
+        {
+          "name": "Compression",
+          "values": [
+            0.3720977267653478,
+            0.3720977267653478
+          ]
+        },
+        {
+          "name": "T-Tuple",
+          "values": [
+            0.799003743815666,
+            0.799003743815666
+          ]
+        },
+        {
+          "name": "LRS",
+          "values": [
+            0.8448638511677761,
+            0.8448638511677761
+          ]
+        },
+        {
+          "name": "MultiMCW Prediction",
+          "values": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "Lag Prediction",
+          "values": [
+            0.9290283131221698,
+            0.9290283131221698
+          ]
+        },
+        {
+          "name": "MultiMMC Prediction",
+          "values": [
+            0.6651587380631331,
+            0.6651587380631331
+          ]
+        },
+        {
+          "name": "LZ78Y Prediction",
+          "values": [
+            0.6684467412231665,
+            0.6684467412231665
+          ]
+        }
+      ],
+      "overall": [
+        0.3720977267653478,
+        0.3720977267653478
+      ]
+    },
+    {
+      "id": "model-20261005",
+      "seed": 20261005,
+      "kind": "model",
+      "samples": 1000000,
+      "inputSha256": "6320d400b6d7173c02160fb14ee3f97f3b3c7401754d17b0b7b4505698f3c8c6",
+      "packedSha256": "0763733c3aa3565570094689e59f7d87e436ac3980004b7b129648ee66a4fee7",
+      "download": "comparison/model-20261005.bin",
+      "commands": [
+        "ea_non_iid -i -a -o model-20261005.nist.json model-20261005.samples.bin 1",
+        "non-iid-main -r -d -s -v model-20261005.samples.bin"
+      ],
+      "logs": [
+        {
+          "file": "model-20261005.nist.json",
+          "sha256": "618fddd3d5e28f0cd11dbe2633667dcabdea7d9cfd58e9c88c2b727db8260051"
+        },
+        {
+          "file": "model-20261005.theseus.txt",
+          "sha256": "36607e25791d2b473f43d41cb38a08e0da471e26c9ed0e0589090fe624f60e84"
+        }
+      ],
+      "estimators": [
+        {
+          "name": "Most Common Value",
+          "values": [
+            0.9960411551173768,
+            0.9960411551173768
+          ]
+        },
+        {
+          "name": "Collision",
+          "values": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "Markov",
+          "values": [
+            0.6730497520532638,
+            0.6730497520532638
+          ]
+        },
+        {
+          "name": "Compression",
+          "values": [
+            0.3724741497863738,
+            0.3724741497863738
+          ]
+        },
+        {
+          "name": "T-Tuple",
+          "values": [
+            0.8026380748734282,
+            0.8026380748734282
+          ]
+        },
+        {
+          "name": "LRS",
+          "values": [
+            0.8198532650151323,
+            0.8198532650151323
+          ]
+        },
+        {
+          "name": "MultiMCW Prediction",
+          "values": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "Lag Prediction",
+          "values": [
+            0.9257197864222227,
+            0.9257197864222227
+          ]
+        },
+        {
+          "name": "MultiMMC Prediction",
+          "values": [
+            0.6646992914792713,
+            0.6646992914792713
+          ]
+        },
+        {
+          "name": "LZ78Y Prediction",
+          "values": [
+            0.667622059897335,
+            0.667622059897335
+          ]
+        }
+      ],
+      "overall": [
+        0.3724741497863738,
+        0.3724741497863738
+      ]
+    },
+    {
+      "id": "model-20261006",
+      "seed": 20261006,
+      "kind": "model",
+      "samples": 1000000,
+      "inputSha256": "c84728e0438010c1cdf05c6ec667ef648aa83f91d066ce786bcbedd5934d5946",
+      "packedSha256": "e1e3ddc9fa1406002e47f42015ef71e08e3d021bd21122a0eaa2f4e921d68a3e",
+      "download": "comparison/model-20261006.bin",
+      "commands": [
+        "ea_non_iid -i -a -o model-20261006.nist.json model-20261006.samples.bin 1",
+        "non-iid-main -r -d -s -v model-20261006.samples.bin"
+      ],
+      "logs": [
+        {
+          "file": "model-20261006.nist.json",
+          "sha256": "1e628f65f7e0638ee77a0f8df8faf0144a9ac3ab8f8bb8bef0a42f0b64ef6b86"
+        },
+        {
+          "file": "model-20261006.theseus.txt",
+          "sha256": "23e81c34c07081ea17ac5ac3982f08a396441095050620c212cbec186183a6d6"
+        }
+      ],
+      "estimators": [
+        {
+          "name": "Most Common Value",
+          "values": [
+            0.9961389928303463,
+            0.9961389928303463
+          ]
+        },
+        {
+          "name": "Collision",
+          "values": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "Markov",
+          "values": [
+            0.6733459684989905,
+            0.6733459684989906
+          ]
+        },
+        {
+          "name": "Compression",
+          "values": [
+            0.3716253427957443,
+            0.3716253427957443
+          ]
+        },
+        {
+          "name": "T-Tuple",
+          "values": [
+            0.8045191400946508,
+            0.8045191400946508
+          ]
+        },
+        {
+          "name": "LRS",
+          "values": [
+            0.8339121611456609,
+            0.8339121611456609
+          ]
+        },
+        {
+          "name": "MultiMCW Prediction",
+          "values": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "Lag Prediction",
+          "values": [
+            0.9303802483783171,
+            0.9303802483783171
+          ]
+        },
+        {
+          "name": "MultiMMC Prediction",
+          "values": [
+            0.664500472066509,
+            0.664500472066509
+          ]
+        },
+        {
+          "name": "LZ78Y Prediction",
+          "values": [
+            0.6679243881203502,
+            0.6679243881203502
+          ]
+        }
+      ],
+      "overall": [
+        0.3716253427957443,
+        0.3716253427957443
+      ]
+    },
+    {
+      "id": "counter-first-million-bits",
+      "seed": null,
+      "kind": "counter",
+      "samples": 1000000,
+      "inputSha256": "502ec4c939a526f4cdf47d567734acacc3f6c9f460db0c4426f91f1ee8e2729f",
+      "packedSha256": "a054f9207b2c8354ae7850e3d85a194a742cb95afcb0795be198112cd6fa55cd",
+      "download": "comparison/counter-first-million-bits.bin",
+      "commands": [
+        "ea_non_iid -i -a -o counter-first-million-bits.nist.json counter-first-million-bits.samples.bin 1",
+        "non-iid-main -r -d -s -v counter-first-million-bits.samples.bin"
+      ],
+      "logs": [
+        {
+          "file": "counter-first-million-bits.nist.json",
+          "sha256": "8d6793bf351853603328a364c2aec5adf0c5fca3d1e2b8bcec8798b5fc540e98"
+        },
+        {
+          "file": "counter-first-million-bits.theseus.txt",
+          "sha256": "b096590101583dd78af87af1c2032dd4663158d7d4f4feab8c9f895513b7c315"
+        }
+      ],
+      "estimators": [
+        {
+          "name": "Most Common Value",
+          "values": [
+            0.9951695421089695,
+            0.9951695421089695
+          ]
+        },
+        {
+          "name": "Collision",
+          "values": [
+            0.90969328988566,
+            0.90969328988566
+          ]
+        },
+        {
+          "name": "Markov",
+          "values": [
+            0.9984416131772348,
+            0.9984416131772348
+          ]
+        },
+        {
+          "name": "Compression",
+          "values": [
+            0.8835379315548821,
+            0.8835379315548821
+          ]
+        },
+        {
+          "name": "T-Tuple",
+          "values": [
+            0.9216225644511836,
+            0.9216225644511836
+          ]
+        },
+        {
+          "name": "LRS",
+          "values": [
+            0.9952983308470883,
+            0.9952983308470883
+          ]
+        },
+        {
+          "name": "MultiMCW Prediction",
+          "values": [
+            0.9448408288332438,
+            0.9448408288332438
+          ]
+        },
+        {
+          "name": "Lag Prediction",
+          "values": [
+            0.9946218144607292,
+            0.9946218144607292
+          ]
+        },
+        {
+          "name": "MultiMMC Prediction",
+          "values": [
+            0.9971695684267113,
+            0.9971695684267113
+          ]
+        },
+        {
+          "name": "LZ78Y Prediction",
+          "values": [
+            0.9448433894464218,
+            0.9448433894464218
+          ]
+        }
+      ],
+      "overall": [
+        0.8835379315548821,
+        0.8835379315548821
+      ]
+    }
+  ]
+}

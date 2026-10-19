@@ -1,0 +1,65 @@
+{
+   "IID" : false,
+   "assessedSampleCount" : 1000000,
+   "bitsPerSymbol" : 1,
+   "bitsPerSymbolInferred" : false,
+   "commandline" : "/workspace/scratch/b73cf923d2ae/entropy-fork/cpp/ea_non_iid -i -a -o counter-first-million-bits.nist.json counter-first-million-bits.samples.bin 1",
+   "dateTimeStamp" : "20261019001133",
+   "errorLevel" : 0,
+   "filename" : "counter-first-million-bits.samples.bin",
+   "sha256" : "502ec4c939a526f4cdf47d567734acacc3f6c9f460db0c4426f91f1ee8e2729f",
+   "sha256Scope" : "assessed-sample-bytes",
+   "testCases" : [
+      {
+         "hOriginal" : 0.99516954210896946,
+         "mcvEstimateMode" : 500389.0,
+         "mcvEstimatePHat" : 0.50038899999999997,
+         "mcvEstimatePU" : 0.5016769149059549,
+         "testCaseDesc" : "Most Common Value"
+      },
+      {
+         "hOriginal" : 0.90969328988566001,
+         "testCaseDesc" : "Collision Test (for bit strings only)"
+      },
+      {
+         "hOriginal" : 0.99844161317723479,
+         "testCaseDesc" : "Markov Test (for bit strings only)"
+      },
+      {
+         "hOriginal" : 0.88353793155488214,
+         "testCaseDesc" : "Compression Test (for bit strings only)"
+      },
+      {
+         "tTupleRes" : 0.92162256445118362,
+         "testCaseDesc" : "T-Tuple Test"
+      },
+      {
+         "lrsRes" : 0.9952983308470883,
+         "testCaseDesc" : "LRS Test"
+      },
+      {
+         "hOriginal" : 0.94484082883324383,
+         "testCaseDesc" : "Multi Most Common in Window Test"
+      },
+      {
+         "hOriginal" : 0.99462181446072917,
+         "testCaseDesc" : "Lag Prediction Test"
+      },
+      {
+         "hOriginal" : 0.99716956842671134,
+         "testCaseDesc" : "Multi Markov Model with Counting Test (MultiMMC)"
+      },
+      {
+         "hOriginal" : 0.94484338944642177,
+         "testCaseDesc" : "LZ78Y Test"
+      },
+      {
+         "dataWordSize" : 1.0,
+         "hAssessed" : 0.88353793155488214,
+         "hOriginal" : 0.88353793155488214,
+         "testCaseDesc" : "Overall"
+      }
+   ],
+   "toolVersion" : "1.1.8",
+   "type" : ""
+}

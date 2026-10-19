@@ -39,6 +39,8 @@ import {
 import { NON_IID_ESTIMATOR_COUNT, SAMPLE_MINIMUM } from '../entropy/thresholds.ts';
 import { currentSample, onSampleChange, type LoadedSample } from './inspectPanel.ts';
 import type { Manifest } from '../entropy/types.ts';
+import { renderComparisonPanel } from './comparisonPanel.ts';
+import { estimatorNote } from '../entropy/estimator-notes.ts';
 
 export function renderAssessPanel(root: HTMLElement, _manifest: Manifest): void {
   clear(root);
@@ -55,8 +57,8 @@ export function renderAssessPanel(root: HTMLElement, _manifest: Manifest): void 
         el('strong', {}, 'smallest'),
         ' answer. Each one models the source differently — one assumes independence, one ' +
           'assumes a Markov chain, one looks for repeated tuples, four try to predict the next ' +
-          'sample — and each is an upper bound on min-entropy ',
-        el('em', {}, 'under its own assumptions'),
+          'sample — and each reports a min-entropy estimate ',
+        el('em', {}, 'with its own assumptions and statistical limitations'),
         '. Taking the minimum is a hedge: if any model can predict your source, you do not get ' +
           'to claim the others could not.'
       ),
@@ -80,6 +82,7 @@ export function renderAssessPanel(root: HTMLElement, _manifest: Manifest): void 
 
   const box = el('div', { id: 'assess-body', role: 'status', 'aria-live': 'polite' });
   root.append(box);
+  root.append(renderComparisonPanel());
 
   const paint = (s: LoadedSample | null): void => {
     clear(box);
@@ -316,7 +319,7 @@ function renderAssessmentFor(s: LoadedSample): HTMLElement {
         { class: 'num', 'data-claim': `est-bit-${e.name.replace(/\s+/g, '-').toLowerCase()}` },
         e.bitsPerBit === null ? 'declined' : e.bitsPerBit.toFixed(6)
       ),
-      el('td', {}, e.assumption)
+      el('td', {}, estimatorNote(e.name, e.assumption))
     );
     tbody.append(row);
   }

@@ -1,0 +1,65 @@
+{
+   "IID" : false,
+   "assessedSampleCount" : 1000000,
+   "bitsPerSymbol" : 1,
+   "bitsPerSymbolInferred" : false,
+   "commandline" : "/workspace/scratch/b73cf923d2ae/entropy-fork/cpp/ea_non_iid -i -a -o model-20261002.nist.json model-20261002.samples.bin 1",
+   "dateTimeStamp" : "20261019001122",
+   "errorLevel" : 0,
+   "filename" : "model-20261002.samples.bin",
+   "sha256" : "5054de27890ad6169d6152a090d1ce74187ed4c6cfb8d2905ecf6cc7ace0b81f",
+   "sha256Scope" : "assessed-sample-bytes",
+   "testCases" : [
+      {
+         "hOriginal" : 0.9962253257487188,
+         "mcvEstimateMode" : 500022.0,
+         "mcvEstimatePHat" : 0.50002199999999997,
+         "mcvEstimatePU" : 0.50130991529448554,
+         "testCaseDesc" : "Most Common Value"
+      },
+      {
+         "hOriginal" : 1.0,
+         "testCaseDesc" : "Collision Test (for bit strings only)"
+      },
+      {
+         "hOriginal" : 0.67433528315734714,
+         "testCaseDesc" : "Markov Test (for bit strings only)"
+      },
+      {
+         "hOriginal" : 0.37390414190019,
+         "testCaseDesc" : "Compression Test (for bit strings only)"
+      },
+      {
+         "tTupleRes" : 0.80451914009465075,
+         "testCaseDesc" : "T-Tuple Test"
+      },
+      {
+         "lrsRes" : 0.86842594842074994,
+         "testCaseDesc" : "LRS Test"
+      },
+      {
+         "hOriginal" : 1.0,
+         "testCaseDesc" : "Multi Most Common in Window Test"
+      },
+      {
+         "hOriginal" : 0.9279712815567045,
+         "testCaseDesc" : "Lag Prediction Test"
+      },
+      {
+         "hOriginal" : 0.66439764522834854,
+         "testCaseDesc" : "Multi Markov Model with Counting Test (MultiMMC)"
+      },
+      {
+         "hOriginal" : 0.66892573169784719,
+         "testCaseDesc" : "LZ78Y Test"
+      },
+      {
+         "dataWordSize" : 1.0,
+         "hAssessed" : 0.37390414190019,
+         "hOriginal" : 0.37390414190019,
+         "testCaseDesc" : "Overall"
+      }
+   ],
+   "toolVersion" : "1.1.8",
+   "type" : ""
+}

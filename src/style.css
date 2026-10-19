@@ -452,3 +452,10 @@ dl.kv dd { margin: 0; color: var(--text-dim); font-family: var(--mono); font-siz
     transition-duration: 0.001ms !important;
   }
 }
+
+#assessment-comparison { margin-top:2rem; }
+#assessment-comparison select { display:block; width:100%; max-width:100%; min-height:44px; margin:.5rem 0 1rem; }
+#assessment-comparison button { margin-bottom:.5rem; }
+#assessment-comparison .comparison-hash { overflow-wrap:anywhere; font-size:.85rem; }
+#assessment-comparison summary { cursor:pointer; padding:.75rem 0; }
+#assessment-comparison p { margin:.8rem 0; }
