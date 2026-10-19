@@ -1,0 +1,65 @@
+{
+   "IID" : false,
+   "assessedSampleCount" : 1000000,
+   "bitsPerSymbol" : 1,
+   "bitsPerSymbolInferred" : false,
+   "commandline" : "/workspace/scratch/b73cf923d2ae/entropy-fork/cpp/ea_non_iid -i -a -o model-20261003.nist.json model-20261003.samples.bin 1",
+   "dateTimeStamp" : "20261019001125",
+   "errorLevel" : 0,
+   "filename" : "model-20261003.samples.bin",
+   "sha256" : "bc8225523e4d56549fb7d3fe2f22b7883aad9e80b4e8a751e2700a3a401bcc30",
+   "sha256Scope" : "assessed-sample-bytes",
+   "testCases" : [
+      {
+         "hOriginal" : 0.99566137761743345,
+         "mcvEstimateMode" : 500218.0,
+         "mcvEstimatePHat" : 0.50021800000000005,
+         "mcvEstimatePU" : 0.50150591517331855,
+         "testCaseDesc" : "Most Common Value"
+      },
+      {
+         "hOriginal" : 1.0,
+         "testCaseDesc" : "Collision Test (for bit strings only)"
+      },
+      {
+         "hOriginal" : 0.6729653397255787,
+         "testCaseDesc" : "Markov Test (for bit strings only)"
+      },
+      {
+         "hOriginal" : 0.37280266167869563,
+         "testCaseDesc" : "Compression Test (for bit strings only)"
+      },
+      {
+         "tTupleRes" : 0.80080025744158756,
+         "testCaseDesc" : "T-Tuple Test"
+      },
+      {
+         "lrsRes" : 0.87105882017340763,
+         "testCaseDesc" : "LRS Test"
+      },
+      {
+         "hOriginal" : 1.0,
+         "testCaseDesc" : "Multi Most Common in Window Test"
+      },
+      {
+         "hOriginal" : 0.9284873454075937,
+         "testCaseDesc" : "Lag Prediction Test"
+      },
+      {
+         "hOriginal" : 0.66360269929896021,
+         "testCaseDesc" : "Multi Markov Model with Counting Test (MultiMMC)"
+      },
+      {
+         "hOriginal" : 0.66754190777448708,
+         "testCaseDesc" : "LZ78Y Test"
+      },
+      {
+         "dataWordSize" : 1.0,
+         "hAssessed" : 0.37280266167869563,
+         "hOriginal" : 0.37280266167869563,
+         "testCaseDesc" : "Overall"
+      }
+   ],
+   "toolVersion" : "1.1.8",
+   "type" : ""
+}

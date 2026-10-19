@@ -311,3 +311,30 @@ these numbers — was false.
 ## System construction bridge
 
 The live demo now links the [SP 800-90C final](https://csrc.nist.gov/pubs/sp/800/90/c/final) construction classes to source health, conditioning and fresh-input dependencies. DRBG Arena’s class chooser is a source-request model, not a validated RBG or a replacement for the existing compromise experiments.
+
+## Two-tool evidence, repeated runs, and attribution
+
+Act 3 now includes a separate “Same bytes, two assessment tools” panel. Seven published one-bit inputs (six simulated circuit seeds and the first million bits of the public counter-hash fixture) are each assessed by the pinned NIST fork and **Theseus, by Joshua E. Hill / KeyPair Consulting**. All 140 estimator values are taken from actual native-tool reports. `public/comparison/results.json` records source commits, binary and input SHA-256 hashes, commands, platform, and output-log hashes. Input files and original reports are downloadable. The existing fixture manifest and its historical results are preserved.
+
+The repeated-run range illustrates variability under one fixed software model. It is not a confidence interval, hardware assessment, or entropy-source validation. Agreement between tools is a cross-check, not a correctness proof. The interactive IID exercise separates bias, dependence, changing distributions, and a known deterministic sequence.
+
+**Source credit:**
+
+- Joshua E. Hill, *[The IID Assumption and YOU!](https://www.untruth.org/~josh/sp80090b/The%20IID%20Assumption%20and%20YOU%20D14.pdf)*, ICMC 2019, version D14, especially slides 4–9: informs the IID exercise.
+- Joshua E. Hill, *[SP 800-90B Refinements: Validation Process, Estimator Confidence Intervals, and Assessment Stability](https://www.untruth.org/~josh/sp80090b/90B%20Extravaganza%2020200921.pdf)*, ICMC 2020, version 20200921, slides 14–26: motivates examining repeated-run variation and confidence assumptions. The six-run exercise does not implement his proposed bootstrap procedure or establish its confidence level.
+- [Theseus](https://github.com/KeyPair-Consulting/Theseus), Joshua E. Hill / KeyPair Consulting: second native assessment implementation. Its source and binaries are not redistributed in this lab. Follow its own BSD-3-Clause notices when obtaining or modifying it.
+- [NIST SP 800-90B](https://csrc.nist.gov/pubs/sp/800/90/b/final): normative source, including its linked errata. Hill’s analyses and proposals remain separately identified.
+
+The fixtures, comparison harness, interaction, and explanations are original Crypto Lab work. No Hill slide images or numerical tables were copied; attribution does not imply his review or endorsement.
+
+### Reproduce the comparison
+
+Use Node 22.18+ (native TypeScript stripping), GCC, OpenMP, and the development packages `libdivsufsort-dev libjsoncpp-dev libssl-dev libbz2-dev`. Check out both tools at the exact commits listed in `public/comparison/results.json`, then:
+
+```sh
+make -C ../entropy-fork/cpp non_iid
+make -C ../theseus/src non-iid-main
+npm run comparison:verify -- --fork ../entropy-fork --theseus ../theseus
+```
+
+The verifier regenerates all seven inputs, checks their SHA-256 hashes, reruns both tools, requires all ten estimators, and compares every figure to the recorded value with an absolute tolerance of 1e-9 bits/sample. Binary hashes describe the recorded build; rebuilt binaries may differ across compilers. Recording a new result is an explicit `comparison:record` operation, never an automatic repair of failed evidence. The dedicated comparison workflow runs this check on pushes and pull requests. Every input is public, simulated or deterministic, and **never key material**.

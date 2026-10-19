@@ -15,7 +15,9 @@
     "fixtures:gen": "node scripts/gen-fixtures.mjs",
     "fixtures:assess": "node scripts/assess-fixtures.mjs",
     "fixtures:verify": "node scripts/verify-fixtures.mjs",
-    "mutate": "node scripts/mutate.mjs"
+    "mutate": "node scripts/mutate.mjs",
+    "comparison:record": "node scripts/compare-assessments.ts --write",
+    "comparison:verify": "node scripts/compare-assessments.ts --verify"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

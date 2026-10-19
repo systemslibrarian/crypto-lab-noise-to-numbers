@@ -3,6 +3,25 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { expectMarkerText, expectMarkerVisible } from './sink';
 import { MUTATIONS } from './mutations';
+import comparison from '../public/comparison/results.json';
+
+test('two-tool evidence stays separate from the selected upload and exposes assumptions', async ({page}) => {
+  await page.goto('./');
+  await page.locator('[data-panel="assess"]').click();
+  await expect(page.locator('#comparison-result')).toContainText('10/10 estimators agree');
+  await page.locator('#comparison-input').selectOption('counter-first-million-bits');
+  const counter = comparison.runs.find(r=>r.kind==='counter')!;
+  await expect(page.locator('#comparison-result')).toContainText(counter.overall[0].toFixed(9));
+  await expect(page.locator('#comparison-result')).toContainText(counter.inputSha256);
+  await page.locator('#iid-scenario').selectOption('1');
+  await page.locator('#iid-reveal').click();
+  await expect(page.locator('#iid-answer')).toContainText('Not independent');
+  await page.locator('#iid-scenario').selectOption('0');
+  await expect(page.locator('#iid-answer')).toBeEmpty();
+  await page.locator('#iid-reveal').click();
+  await expect(page.locator('#iid-answer')).toContainText('IID can be biased');
+  await expect(page.locator('#assessment-comparison')).toContainText('Joshua E. Hill');
+});
 
 /**
  * THE CLAIMS SUITE (§4.1b) AND THE NEGATIVE CLAIMS (§4.1d).

@@ -1,0 +1,65 @@
+{
+   "IID" : false,
+   "assessedSampleCount" : 1000000,
+   "bitsPerSymbol" : 1,
+   "bitsPerSymbolInferred" : false,
+   "commandline" : "/workspace/scratch/b73cf923d2ae/entropy-fork/cpp/ea_non_iid -i -a -o model-20261004.nist.json model-20261004.samples.bin 1",
+   "dateTimeStamp" : "20261019001127",
+   "errorLevel" : 0,
+   "filename" : "model-20261004.samples.bin",
+   "sha256" : "198dc88304c7d856d4c2cb8f1382bf4aaa2c6a5576ce1c795f71284dfcff4403",
+   "sha256Scope" : "assessed-sample-bytes",
+   "testCases" : [
+      {
+         "hOriginal" : 0.99573042061714734,
+         "mcvEstimateMode" : 500194.0,
+         "mcvEstimatePHat" : 0.50019400000000003,
+         "mcvEstimatePU" : 0.50148191519878837,
+         "testCaseDesc" : "Most Common Value"
+      },
+      {
+         "hOriginal" : 1.0,
+         "testCaseDesc" : "Collision Test (for bit strings only)"
+      },
+      {
+         "hOriginal" : 0.67385183618718358,
+         "testCaseDesc" : "Markov Test (for bit strings only)"
+      },
+      {
+         "hOriginal" : 0.3720977267653478,
+         "testCaseDesc" : "Compression Test (for bit strings only)"
+      },
+      {
+         "tTupleRes" : 0.79900374381566597,
+         "testCaseDesc" : "T-Tuple Test"
+      },
+      {
+         "lrsRes" : 0.84486385116777607,
+         "testCaseDesc" : "LRS Test"
+      },
+      {
+         "hOriginal" : 1.0,
+         "testCaseDesc" : "Multi Most Common in Window Test"
+      },
+      {
+         "hOriginal" : 0.92902831312216982,
+         "testCaseDesc" : "Lag Prediction Test"
+      },
+      {
+         "hOriginal" : 0.66515873806313308,
+         "testCaseDesc" : "Multi Markov Model with Counting Test (MultiMMC)"
+      },
+      {
+         "hOriginal" : 0.6684467412231665,
+         "testCaseDesc" : "LZ78Y Test"
+      },
+      {
+         "dataWordSize" : 1.0,
+         "hAssessed" : 0.3720977267653478,
+         "hOriginal" : 0.3720977267653478,
+         "testCaseDesc" : "Overall"
+      }
+   ],
+   "toolVersion" : "1.1.8",
+   "type" : ""
+}

@@ -1,0 +1,45 @@
+name: Reproduce two-tool comparison
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  comparison:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: lab
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Read recorded source pins
+        id: pins
+        run: |
+          node -e "const fs=require('fs'); const d=require('./lab/public/comparison/results.json'); for (const [i,k] of ['fork','theseus'].entries()) { const sha=d.tools[i].commit; if(!/^[a-f0-9]{40}$/.test(sha)) throw Error('Invalid source pin'); fs.appendFileSync(process.env.GITHUB_OUTPUT,k+'='+sha+'\n'); }"
+      - uses: actions/checkout@v7
+        with:
+          repository: systemslibrarian/SP800-90B_EntropyAssessment
+          ref: ${{ steps.pins.outputs.fork }}
+          path: entropy-fork
+      - uses: actions/checkout@v7
+        with:
+          repository: KeyPair-Consulting/Theseus
+          ref: ${{ steps.pins.outputs.theseus }}
+          path: theseus
+      - name: Install native dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends build-essential libdivsufsort-dev libjsoncpp-dev libssl-dev libbz2-dev
+      - name: Build both recorded implementations
+        run: |
+          make -C entropy-fork/cpp non_iid
+          make -C theseus/src -j2 non-iid-main
+      - name: Regenerate inputs and compare every estimator
+        working-directory: lab
+        run: npm run comparison:verify -- --fork ../entropy-fork --theseus ../theseus

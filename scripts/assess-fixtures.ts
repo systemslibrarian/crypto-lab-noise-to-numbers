@@ -26,6 +26,7 @@ import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'no
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildAll } from './gen-fixtures.ts';
+import { estimatorNote } from '../src/entropy/estimator-notes.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, '..');
@@ -185,7 +186,7 @@ function assess(
       bitsPerBit,
       bitstringOnly: e.bitstringOnly,
       declined,
-      assumption: ASSUMPTIONS[e.short],
+      assumption: estimatorNote(e.short, ASSUMPTIONS[e.short]),
     };
   });
 
