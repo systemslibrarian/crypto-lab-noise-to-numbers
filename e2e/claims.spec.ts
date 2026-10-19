@@ -7,7 +7,7 @@ import comparison from '../public/comparison/results.json' with { type: 'json' }
 
 test('two-tool evidence stays separate from the selected upload and exposes assumptions', async ({page}) => {
   await page.goto('./');
-  await page.locator('[data-panel="assess"]').click();
+  await openAct(page, /Assess Min-Entropy/);
   await expect(page.locator('#comparison-result')).toContainText('10/10 estimators agree');
   await page.locator('#comparison-input').selectOption('counter-first-million-bits');
   const counter = comparison.runs.find(r=>r.kind==='counter')!;
