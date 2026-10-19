@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { expectMarkerText, expectMarkerVisible } from './sink';
 import { MUTATIONS } from './mutations';
-import comparison from '../public/comparison/results.json';
+import comparison from '../public/comparison/results.json' with { type: 'json' };
 
 test('two-tool evidence stays separate from the selected upload and exposes assumptions', async ({page}) => {
   await page.goto('./');
