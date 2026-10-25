@@ -860,6 +860,24 @@ export async function driveAllStates(page: Page, theme: string): Promise<void> {
   await scanAt('Act 5: the conditioning provenance disclosure open');
 
   // ══ ACT 6 ═══════════════════════════════════════════════════════════════
+  await page.locator('#parity-run').click();
+  await scanAt('analytic parity: independent control');
+  await page.selectOption('#parity-source', 'sticky');
+  await page.locator('#parity-run').click();
+  await expect(page.locator('#parity-status')).toContainText('DEPENDENCE MATTERS');
+  await scanAt('analytic parity: correlated even block');
+  await page.selectOption('#parity-length', '3');
+  await page.locator('#parity-run').click();
+  await scanAt('analytic parity: odd block with zero marginal bias');
+  await page.selectOption('#parity-source', 'alternate');
+  await page.selectOption('#parity-length', '16');
+  await page.selectOption('#parity-initial', 'zero');
+  await page.locator('#parity-run').click();
+  await scanAt('analytic parity: alternating source and largest exact fraction');
+  await page.selectOption('#parity-initial', 'one');
+  await expect(page.locator('#parity-result')).toBeHidden();
+  await scanAt('analytic parity: retired result');
+
   await openTab(page, /One-Time Pad/, '#panel-pad');
   await scanAt('Act 6: arrival, before anything is encrypted');
 
