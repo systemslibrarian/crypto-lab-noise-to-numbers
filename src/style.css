@@ -459,3 +459,6 @@ dl.kv dd { margin: 0; color: var(--text-dim); font-family: var(--mono); font-siz
 #assessment-comparison .comparison-hash { overflow-wrap:anywhere; font-size:.85rem; }
 #assessment-comparison summary { cursor:pointer; padding:.75rem 0; }
 #assessment-comparison p { margin:.8rem 0; }
+.parity-exact { overflow-wrap: anywhere; }
+#parity-panel select { display: block; width: 100%; max-width: 100%; margin-bottom: 1rem; }
+#parity-panel label { display: block; }

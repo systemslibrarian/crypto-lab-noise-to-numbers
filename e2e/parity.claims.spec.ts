@@ -1,0 +1,33 @@
+import { expect, test } from '@playwright/test';
+
+test('parity model exposes exact memory effects and the finite-length boundary', async ({ page }) => {
+  await page.goto('.');
+  await page.getByRole('tab', { name: /Follow Conditioning/ }).click();
+  await expect(page.locator('#parity-source')).toHaveValue('iid');
+  await page.click('#parity-run');
+  await expect(page.locator('#parity-result tbody tr').last()).toContainText('0.25000000');
+  await page.selectOption('#parity-source', 'sticky');
+  await expect(page.locator('#parity-result')).toBeHidden();
+  await page.click('#parity-run');
+  await expect(page.locator('#parity-status')).toContainText('DEPENDENCE MATTERS');
+  const row = page.locator('#parity-result tbody tr').last();
+  expect(await row.locator('td').allTextContents()).toEqual(['0.80000000', '0.00000000', '0.90000000', '0.80000000']);
+  await expect(page.locator('#parity-exact')).toContainText('36000/40000');
+  await expect(page.locator('#parity-distance')).toContainText('0.40000000');
+  await page.locator('#parity-source').dispatchEvent('change');
+  await expect(page.locator('#parity-result')).toBeVisible();
+  await page.selectOption('#parity-length', '3');
+  await expect(page.locator('#parity-result')).toBeHidden();
+  await page.click('#parity-run');
+  await expect(page.locator('#parity-status')).toContainText('does not establish independence');
+  await expect(page.locator('#parity-result tbody tr').last().locator('td').first()).toHaveText('0.00000000');
+  await page.selectOption('#parity-source', 'alternate');
+  await page.selectOption('#parity-length', '2');
+  await page.click('#parity-run');
+  await expect(page.locator('#parity-result tbody tr').last().locator('td').first()).toHaveText('-0.80000000');
+  await page.selectOption('#parity-initial', 'zero');
+  await page.click('#parity-run');
+  await expect(page.locator('#parity-result tbody tr').first().locator('td').first()).toHaveText('-0.80000000');
+  await expect(page.locator('#parity-panel')).toContainText('not a hardware capture');
+  await expect(page.locator('#parity-panel')).toContainText('do not transfer to arbitrary hidden or unbounded-memory sources');
+});

@@ -30,6 +30,7 @@ import { renderBreakPanel } from './ui/breakPanel.ts';
 import { renderConditionPanel } from './ui/conditionPanel.ts';
 import { renderPadPanel } from './ui/padPanel.ts';
 import { renderHonesty } from './ui/honesty.ts';
+import { parityPanel } from './ui/parityPanel.ts';
 import { el } from './ui/dom.ts';
 import type { Manifest } from './entropy/types.ts';
 import manifestJson from '../fixtures/manifest.json';
@@ -58,6 +59,7 @@ function mount(manifest: Manifest): void {
         break;
       case 'condition':
         renderConditionPanel(root, manifest);
+        root.append(parityPanel());
         break;
       case 'pad':
         renderPadPanel(root);

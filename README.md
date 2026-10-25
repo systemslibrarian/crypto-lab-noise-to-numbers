@@ -244,7 +244,23 @@ npm run fixtures:verify   # regenerate and re-measure, failing on any disagreeme
 
 ## Build & Verify
 
-**113 unit tests** (Vitest), **23 claims tests** and **2 accessibility scans**
+**Exact Markov parity lesson.** The conditioning tab also executes the signed
+transition-kernel formula from Skorski and Mittmann, [Unpredictability from
+Parity](https://eprint.iacr.org/2026/2417), Theorem III.1, Corollary III.7 and
+Theorem III.11. Integer-fraction arithmetic computes blocks up to 16 bits for
+independent, repeating and alternating binary sources. The visitor chooses the
+initial law and block length, compares exact parity with the product-of-marginals
+shortcut, and sees odd/even rebounds, single-bit guessing probability and the
+first-order bound. The initial bit is excluded from the XOR. This is a separate
+analytic model, not a measurement of the source fixtures or a hardware entropy
+certificate. Eight new unit cases use exhaustive path enumeration as an independent
+oracle; browser checks own the displayed arithmetic and negative boundary.
+Run `node scripts/check-parity-mutations.mjs` to break the signed kernel, distance
+calculation and scope statement one at a time, require successful builds and
+assertion failures, and restore the exact baseline bundle. Existing mutation
+and fixture-assessment gates remain in place.
+
+**123 unit tests** (Vitest), **25 claims tests** and **2 accessibility scans**
 (Playwright), plus an independent fixture-verification job.
 
 | Check | What it establishes |
