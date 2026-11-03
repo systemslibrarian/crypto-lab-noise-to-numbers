@@ -90,10 +90,22 @@ jobs:
         # passes everything is caught.
         run: ./pin-check.sh --prove-nonvacuous
 
+      # The npm cache is written only on refs whose manifest is already trusted.
+      #
+      # On `pull_request` the PR's own fixtures/manifest.json chooses which
+      # commit of the assessment-tool fork gets checked out, built and run by
+      # the three steps above, so those steps execute code the pull request
+      # picked. A cache entry saved after them is restorable by later runs,
+      # including on main -- CodeQL actions/cache-poisoning/poisonable-step.
+      #
+      # The expression order matters: `!= 'pull_request' && 'npm' || ''` yields
+      # 'npm' off pull requests and '' on them, and setup-node treats '' as no
+      # cache. Written the other way round (`== && '' || 'npm'`) it would yield
+      # 'npm' in BOTH cases, because '' is falsy to `||`.
       - uses: actions/setup-node@v7
         with:
           node-version: 22
-          cache: npm
+          cache: ${{ github.event_name != 'pull_request' && 'npm' || '' }}
           cache-dependency-path: lab/package-lock.json
 
       - name: Install
