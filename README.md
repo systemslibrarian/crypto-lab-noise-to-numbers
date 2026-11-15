@@ -187,7 +187,7 @@ npm run dev          # http://localhost:5173/crypto-lab-noise-to-numbers/
 Other scripts:
 
 ```sh
-npm test             # the unit and correctness suite (113 tests)
+npm test             # the unit and correctness suite (123 tests)
 npm run build        # type-check and build
 npm run test:claims  # the claims suite, against the production build
 npm run test:a11y    # the WCAG 2.1 A/AA gate, against the production build
