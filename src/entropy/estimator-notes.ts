@@ -4,7 +4,7 @@ export function estimatorNote(name:string, original:string): string {
   const notes:Record<string,string> = {
     Compression: 'Uses recurrence-distance statistics and a reference model to estimate entropy. Its confidence calculation is not assumption-free; dependence can affect its interpretation. Defined for binary input.',
     'T-Tuple': 'Uses the most frequent repeated tuple. Overlapping tuples and taking a maximum complicate the confidence calculation; using the non-IID track does not remove these assumptions.',
-    LRS: 'Uses repeated substrings and collision statistics. Independence assumptions in the statistical derivation need care for dependent sources; an observed long repeat is evidence, not a universal entropy bound.',
+    LRS: 'Uses repeated substrings and collision statistics. Independence assumptions in the statistical derivation need care for dependent sources; an observed long repeat is evidence, not a universal entropy bound. Woo et al. (arXiv:2112.09376, 2021) explain that LRS estimates collision entropy, an upper bound on min-entropy, so it tends to overestimate min-entropy on its own and contributes to the SP 800-90B result only through the minimum across all ten non-IID estimators.',
   };
   return notes[name] ?? original;
 }

@@ -267,6 +267,11 @@ test('Act 3 prints the recorded figures, with units, and the estimator table agr
 
   // The table has exactly the ten estimators SP 800-90B 6.2 names.
   await expect(page.locator('[data-claim="estimator-table"] tbody tr')).toHaveCount(10);
+  const lrs = page.locator('[data-claim="estimator-table"] tbody tr').filter({
+    has: page.locator('[data-claim="est-sample-lrs"]'),
+  });
+  await expect(lrs).toContainText('collision entropy, an upper bound on min-entropy');
+  await expect(lrs).toContainText('minimum across all ten non-IID estimators');
   // Exactly one row is marked binding.
   await expect(page.locator('[data-claim="estimator-table"] tr.binding')).toHaveCount(1);
 
