@@ -521,7 +521,7 @@ export function renderConditionPanel(root: HTMLElement, manifest: Manifest): voi
             {},
             `Assessed min-entropy in bits per bit, against this lab’s "high" line of ` +
               `${HIGH_ESTIMATE_BITS_PER_BIT}. Two of these three streams are above it, and the ` +
-              `physical one is not.`
+              `modelled raw stream is not.`
           ),
           el(
             'thead',
