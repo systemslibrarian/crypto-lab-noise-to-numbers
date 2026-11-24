@@ -136,29 +136,32 @@ export function runLengths(samples: Uint8Array, cap = 64): RunLengthHistogram {
 /**
  * Pearson autocorrelation of the sample sequence at lag k.
  *
- * Returns 0 when the sample variance is 0, which is the all-identical case —
- * correlation is undefined there and the alternative is a NaN that would
- * render as "NaN" on the page. The lab says "undefined (constant input)"
- * rather than printing a zero that looks like independence.
+ * Each lagged series is centered on its own mean. Callers can request NaN
+ * for undefined correlations; the numeric helper historically returns zero.
  */
-export function autocorrelation(samples: Uint8Array, lag: number): number {
+export function autocorrelation(samples: Uint8Array, lag: number, undefinedValue = 0): number {
   const n = samples.length - lag;
-  if (lag <= 0 || n <= 1) return 0;
-  let sx = 0;
-  for (let i = 0; i < samples.length; i++) sx += samples[i];
-  const mean = sx / samples.length;
+  if (!Number.isInteger(lag) || lag <= 0 || n < 2) return undefinedValue;
+  let sumA = 0;
+  let sumB = 0;
+  for (let i = 0; i < n; i++) {
+    sumA += samples[i];
+    sumB += samples[i + lag];
+  }
+  const meanA = sumA / n;
+  const meanB = sumB / n;
   let num = 0;
   let denA = 0;
   let denB = 0;
   for (let i = 0; i < n; i++) {
-    const a = samples[i] - mean;
-    const b = samples[i + lag] - mean;
+    const a = samples[i] - meanA;
+    const b = samples[i + lag] - meanB;
     num += a * b;
     denA += a * a;
     denB += b * b;
   }
   const den = Math.sqrt(denA * denB);
-  return den === 0 ? 0 : num / den;
+  return den === 0 ? undefinedValue : num / den;
 }
 
 /** True when every sample is identical, so correlation is undefined. */
@@ -181,8 +184,8 @@ export function findRepeatedBlock(
   samples: Uint8Array,
   blockLength: number
 ): RepeatedBlock | null {
-  if (blockLength <= 0 || samples.length < blockLength * 2) return null;
-  const seen = new Map<string, number>();
+  if (!Number.isInteger(blockLength) || blockLength <= 0 || samples.length < blockLength + 1) return null;
+  const seen = new Map<number, number | number[]>();
   // A 32-bit FNV-1a over the window, recomputed per window. Windows are short
   // (the UI offers 16-4096) and this stays well inside the worker's budget.
   for (let o = 0; o + blockLength <= samples.length; o++) {
@@ -191,19 +194,25 @@ export function findRepeatedBlock(
       h ^= samples[o + i];
       h = Math.imul(h, 0x01000193) >>> 0;
     }
-    const key = String(h);
-    const prev = seen.get(key);
-    if (prev !== undefined) {
-      let same = true;
-      for (let i = 0; i < blockLength; i++) {
-        if (samples[prev + i] !== samples[o + i]) {
-          same = false;
-          break;
+    const previous = seen.get(h);
+    if (previous !== undefined) {
+      const candidates = typeof previous === 'number' ? [previous] : previous;
+      for (const prev of candidates) {
+        let same = true;
+        for (let i = 0; i < blockLength; i++) {
+          if (samples[prev + i] !== samples[o + i]) {
+            same = false;
+            break;
+          }
         }
+        if (same) return { blockLength, firstOffset: prev, secondOffset: o };
       }
-      if (same) return { blockLength, firstOffset: prev, secondOffset: o };
+      // Keep every distinct colliding block so a collision cannot hide a
+      // subsequent true repeat of a block other than the first candidate.
+      candidates.push(o);
+      seen.set(h, candidates);
     } else {
-      seen.set(key, o);
+      seen.set(h, o);
     }
   }
   return null;
@@ -255,10 +264,9 @@ export function describe(samples: Uint8Array, opts: DescriptiveOptions): Descrip
   const runs = binary ? runLengths(samples) : null;
   step(0.6);
 
-  const constant = isConstant(samples);
   const autocorr = opts.lags.map((lag) => ({
     lag,
-    r: constant ? Number.NaN : autocorrelation(samples, lag),
+    r: autocorrelation(samples, lag, Number.NaN),
   }));
   step(0.8);
 

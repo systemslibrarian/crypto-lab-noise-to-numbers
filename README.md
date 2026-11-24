@@ -25,7 +25,7 @@ construction is published here — SHA-256 over a little-endian counter, startin
 at zero — was assessed at **0.919220 bits of min-entropy per bit**. The modelled
 physical noise source was assessed at **0.372625**. The stream anyone can
 regenerate from four lines of description scored **2.47 times higher** than the
-one driven by thermal noise. Nobody decided those numbers in advance; they are
+seeded software model of thermal noise. Nobody decided those numbers in advance; they are
 what the tool reported, and the page shows you how to reproduce them.
 
 **Primitives and specs.** NIST SP 800-90B (non-IID track, ten estimators,
@@ -140,9 +140,12 @@ Each of these is a reachable state in the lab, not a hypothetical.
 - **The wrong `bits_per_symbol`.** Re-read a fixture at the wrong width in Act 2
   and the lab withdraws its recorded figure, because the figure was measured for
   a different reading of those bytes.
-- **An estimate on conditioned output.** It looks excellent whatever went in,
-  because a good hash produces uniform-looking bytes from anything. Act 5 shows
-  the same source crossing the lab's "high" line purely by being conditioned.
+- **An estimate on conditioned output.** It can look high even when its input
+  is predictable. Act 5 shows the same model crossing the lab's "high" line
+  after conditioning. That result alone establishes neither uniformity nor
+  unpredictability. The ledger shows the driver's input allowance and a
+  normalized per-cycle budget ceiling, capped at one bit per output bit;
+  neither is a measured output entropy or an independence guarantee.
 - **A fault that raises the number.** Act 4, measured. A rising figure is not
   evidence that nothing is wrong.
 - **An all-zero file.** `all-zero` meets the sample minimum and is still

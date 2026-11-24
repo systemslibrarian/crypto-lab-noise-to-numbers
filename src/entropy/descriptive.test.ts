@@ -66,6 +66,12 @@ describe('autocorrelation', () => {
     expect(autocorrelation(s, 1)).toBeCloseTo(-1, 10);
   });
 
+  it('centers each lagged series separately and distinguishes undefined correlations', () => {
+    expect(autocorrelation(Uint8Array.of(0, 1, 2), 1)).toBeCloseTo(1);
+    expect(autocorrelation(Uint8Array.of(1, 1, 2), 1, NaN)).toBeNaN();
+    expect(autocorrelation(Uint8Array.of(0, 1), 1, NaN)).toBeNaN();
+  });
+
   it('returns 0 rather than NaN where it is undefined', () => {
     expect(autocorrelation(new Uint8Array(10).fill(1), 1)).toBe(0); // zero variance
     expect(autocorrelation(bits('101'), 0)).toBe(0); // no lag
@@ -85,6 +91,17 @@ describe('autocorrelation', () => {
 });
 
 describe('repeated-block search', () => {
+  it('finds overlapping repeats and does not lose a repeat after a hash collision', () => {
+    expect(findRepeatedBlock(new Uint8Array(257), 256)).toEqual({
+      blockLength: 256, firstOffset: 0, secondOffset: 1,
+    });
+    // Distinct 16-byte blocks independently found to share FNV-1a 3973483022.
+    const a = Buffer.from('2b22bd76e47caea981dce7f738fcd841', 'hex');
+    const b = Buffer.from('f1c8cb8407584846497705bc7e19d1b7', 'hex');
+    expect(findRepeatedBlock(Buffer.concat([a, b, b]), 16)).toEqual({
+      blockLength: 16, firstOffset: 16, secondOffset: 32,
+    });
+  });
   it('finds a planted repeat and reports both offsets', () => {
     const s = new Uint8Array(2000);
     for (let i = 0; i < s.length; i++) s[i] = (i * 31 + (i >> 5)) & 1;

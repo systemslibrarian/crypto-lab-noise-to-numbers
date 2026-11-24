@@ -12,9 +12,9 @@
     "test:a11y": "playwright test --project=a11y",
     "test:claims": "playwright test --project=claims",
     "test:e2e:all": "playwright test",
-    "fixtures:gen": "node scripts/gen-fixtures.mjs",
-    "fixtures:assess": "node scripts/assess-fixtures.mjs",
-    "fixtures:verify": "node scripts/verify-fixtures.mjs",
+    "fixtures:gen": "node scripts/gen-fixtures.ts",
+    "fixtures:assess": "node scripts/assess-fixtures.ts",
+    "fixtures:verify": "node scripts/verify-fixtures.ts",
     "mutate": "node scripts/mutate.mjs",
     "comparison:record": "node scripts/compare-assessments.ts --write",
     "comparison:verify": "node scripts/compare-assessments.ts --verify"

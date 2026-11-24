@@ -20,6 +20,7 @@ import { corr, pct } from './figures.ts';
 import { badgeRow, provenanceBadge } from './labels.ts';
 import { fixtureById } from '../entropy/manifest.ts';
 import { INPUT_SIZE_CAP, type DescriptiveStats } from '../entropy/descriptive.ts';
+import { webcryptoSha256 } from '../entropy/counter-hash.ts';
 import { unpackBits } from '../entropy/encoding.ts';
 import { fixtureDossier } from './fixtureCard.ts';
 import type { Fixture, Manifest } from '../entropy/types.ts';
@@ -38,7 +39,7 @@ export interface LoadedSample {
   sampleCount: number;
 }
 
-type Listener = (s: LoadedSample) => void;
+type Listener = (s: LoadedSample | null) => void;
 
 const listeners: Listener[] = [];
 /** Act 3 subscribes so it always describes the bytes Act 2 is showing. */
@@ -150,9 +151,10 @@ export function renderInspectPanel(root: HTMLElement, manifest: Manifest): void 
   root.append(statusBox, progressRow, liveBox, statsBox, dossierBox);
 
   // ── Worker plumbing ─────────────────────────────────────────────────────
-  const worker = new Worker(new URL('../worker/descriptive.worker.ts', import.meta.url), {
+  const makeWorker = (): Worker => new Worker(new URL('../worker/descriptive.worker.ts', import.meta.url), {
     type: 'module',
   });
+  let worker = makeWorker();
   let runId = 0;
   let activeRun: number | null = null;
 
@@ -166,7 +168,7 @@ export function renderInspectPanel(root: HTMLElement, manifest: Manifest): void 
     }
   };
 
-  worker.onmessage = (ev: MessageEvent<WorkerResponse>): void => {
+  const receive = (ev: MessageEvent<WorkerResponse>): void => {
     const m = ev.data;
     if (m.runId !== activeRun) return; // a stale run's message
     if (m.kind === 'progress') {
@@ -204,9 +206,23 @@ export function renderInspectPanel(root: HTMLElement, manifest: Manifest): void 
       )
     );
   };
+  worker.onmessage = receive;
+
+  // A cancel message cannot interrupt the worker's synchronous calculations.
+  // Terminate it so Cancel really stops the work and a queued result cannot win.
+  const retireAnalysis = (): void => {
+    if (activeRun === null) return;
+    activeRun = null;
+    worker.terminate();
+    worker = makeWorker();
+    worker.onmessage = receive;
+    setBusy(false);
+  };
 
   const analyse = (): void => {
     if (current === null) return;
+    retireAnalysis();
+    clear(statsBox);
     const s = current;
     if (s.bytes.length === 0) {
       clear(statsBox);
@@ -244,11 +260,15 @@ export function renderInspectPanel(root: HTMLElement, manifest: Manifest): void 
 
   runBtn.addEventListener('click', analyse);
   cancelBtn.addEventListener('click', () => {
-    if (activeRun !== null) worker.postMessage({ kind: 'cancel', runId: activeRun });
+    if (activeRun === null) return;
+    retireAnalysis();
+    clear(statsBox);
+    liveBox.textContent = 'Analysis cancelled. No statistics are shown, because a half-finished summary is not a summary.';
   });
 
   // ── Loading ─────────────────────────────────────────────────────────────
   const publish = (s: LoadedSample): void => {
+    retireAnalysis();
     current = s;
     clear(statusBox);
     clear(statsBox);
@@ -269,34 +289,52 @@ export function renderInspectPanel(root: HTMLElement, manifest: Manifest): void 
     analyse();
   };
 
+  let loadId = 0;
+  const beginLoad = (label: string): number => {
+    retireAnalysis();
+    current = null;
+    setBusy(false);
+    runBtn.disabled = true;
+    clear(statsBox);
+    clear(dossierBox);
+    statusBox.textContent = `Loading ${label}…`;
+    liveBox.textContent = '';
+    for (const fn of listeners) fn(null);
+    return ++loadId;
+  };
+
+  const failedLoad = (id: number, message: string): void => {
+    if (id !== loadId) return;
+    statusBox.replaceChildren(el('p', {
+      class: 'verdict verdict-bad', 'data-verdict': 'fixture-fetch-failed',
+    }, message));
+    liveBox.textContent = 'No sample or assessment is available for this selection.';
+  };
+
   const loadFixture = async (id: string): Promise<void> => {
     const f = fixtureById(manifest, id);
     if (!f) return;
-    const res = await fetch(`${BASE}${f.download}`);
-    if (!res.ok) {
-      clear(statusBox);
-      statusBox.append(
-        el(
-          'div',
-          { class: 'verdict verdict-bad', 'data-verdict': 'fixture-fetch-failed' },
-          el('span', { 'aria-hidden': 'true' }, '✕'),
-          el('span', { class: 'verdict-text' }, `Could not load ${f.download} (HTTP ${res.status}).`)
-        )
-      );
-      return;
+    const request = beginLoad(f.title);
+    try {
+      const res = await fetch(`${BASE}${f.download}`);
+      if (!res.ok) throw new Error(`Could not load ${f.download} (HTTP ${res.status}).`);
+      const bytes = new Uint8Array(await res.arrayBuffer());
+      const digest = Array.from(await webcryptoSha256(bytes), b => b.toString(16).padStart(2, '0')).join('');
+      if (request !== loadId) return;
+      if (bytes.length !== f.encoding.originalBytes || digest !== f.encoding.originalSha256) {
+        failedLoad(request, 'The downloaded bytes differ from the assessed fixture. No estimate is shown.');
+        return;
+      }
+      formSelect.value = f.encoding.shippedForm;
+      widthSelect.value = String(f.encoding.bitsPerSymbol);
+      publish({
+        fixture: f, label: f.title, modified: false, bytes,
+        form: f.encoding.shippedForm, bitsPerSymbol: f.encoding.bitsPerSymbol,
+        sampleCount: f.encoding.sampleCount,
+      });
+    } catch (error) {
+      failedLoad(request, error instanceof Error ? error.message : 'Could not read or verify this fixture.');
     }
-    const bytes = new Uint8Array(await res.arrayBuffer());
-    formSelect.value = f.encoding.shippedForm;
-    widthSelect.value = String(f.encoding.bitsPerSymbol);
-    publish({
-      fixture: f,
-      label: f.title,
-      modified: false,
-      bytes,
-      form: f.encoding.shippedForm,
-      bitsPerSymbol: f.encoding.bitsPerSymbol,
-      sampleCount: f.encoding.sampleCount,
-    });
   };
 
   select.addEventListener('change', () => {
@@ -332,8 +370,11 @@ export function renderInspectPanel(root: HTMLElement, manifest: Manifest): void 
   fileInput.addEventListener('change', () => {
     const file = fileInput.files?.[0];
     if (!file) return;
+    const request = beginLoad(file.name);
+    select.selectedIndex = -1;
     void (async (): Promise<void> => {
       const bytes = new Uint8Array(await file.arrayBuffer());
+      if (request !== loadId) return;
       const form = formSelect.value as 'packed-bits' | 'one-sample-per-byte';
       const width = Number(widthSelect.value);
       publish({
@@ -345,7 +386,7 @@ export function renderInspectPanel(root: HTMLElement, manifest: Manifest): void 
         bitsPerSymbol: width,
         sampleCount: form === 'packed-bits' ? bytes.length * 8 : bytes.length,
       });
-    })();
+    })().catch(() => failedLoad(request, `Could not read ${file.name}.`));
   });
 
   void loadFixture('inm-clean');
@@ -432,7 +473,7 @@ function renderStats(box: HTMLElement, s: DescriptiveStats, loaded: LoadedSample
         el(
           'caption',
           {},
-          'Pearson correlation between each sample and the one k positions later. Independent samples sit near zero; "undefined" means every sample is identical, so correlation has no value.'
+          'Pearson correlation between each sample and the one k positions later. Independent samples sit near zero; "undefined" means there are fewer than two pairs or one side of the lagged comparison has no variance.'
         ),
         el('thead', {}, el('tr', {}, el('th', { scope: 'col' }, 'Lag'), el('th', { scope: 'col', class: 'num' }, 'r'))),
         acBody

@@ -75,8 +75,9 @@ export const NEGATIVE_CLAIMS: NegativeClaim[] = [
     id: 'conditioned-needs-a-budget',
     text: 'Conditioned output still needs a justified entropy budget from the raw source.',
     evidence:
-      'Act 5’s ledger: raising the driver’s output multiplier multiplies the bytes and ' +
-      'divides the entropy among them. The entropy bar does not move, at any setting.',
+      'Act 5’s ledger: raising the driver’s output multiplier multiplies the bytes without ' +
+      'increasing its input allowance. The normalized budget ceiling is capped at one bit per ' +
+      'output bit; it is not an entropy measurement. The input-allowance bar does not move.',
   },
   {
     id: 'public-randomness-is-never-a-pad',

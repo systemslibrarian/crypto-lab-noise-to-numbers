@@ -6,11 +6,10 @@
  * It imports the SAME `describe()` the unit tests exercise; there is no second
  * copy of the analysis.
  *
- * CANCELLATION IS COOPERATIVE AND REAL. A worker cannot be interrupted
- * mid-loop from outside, so the host posts `cancel` with the run's id and the
- * worker checks a flag between stages. A cancelled run posts `cancelled` and
- * NO statistics — a half-finished figure is worse than none in a lab whose
- * whole subject is what a number is evidence for.
+ * The UI terminates and replaces this worker when the visitor cancels or
+ * selects a new sample. A posted message alone cannot interrupt these
+ * synchronous calculations; terminating prevents unfinished work or a queued
+ * result from replacing the cancellation state.
  */
 import {
   DESCRIPTIVE_DEFAULTS,

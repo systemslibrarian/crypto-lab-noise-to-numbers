@@ -680,8 +680,11 @@ test('the conditioning ledger multiplies the bytes and never the entropy (I5)', 
   // ...and the entropy does NOT move. This is the invariant the whole act
   // exists to make visible, and the one the page must never draw growing.
   expect(b.ent).toBeCloseTo(a.ent, 1);
-  // So the entropy per output bit falls by the same ratio.
-  expect(a.per / b.per).toBeCloseTo(64, 0);
+  // A binary output cannot carry more than one bit of min-entropy per bit.
+  // The driver allowance is a budget, not an exact entropy measurement.
+  expect(a.per).toBe(1);
+  expect(b.per).toBeCloseTo(b.ent / b.out, 4);
+  await expect(page.locator('#ledger-status')).toContainText('not a measured output entropy');
   expect(await page.locator('[data-verdict="ledger-invariant"]').innerText()).toContain(
     'does not move'
   );
@@ -921,4 +924,138 @@ test('every mutation in the ledger names a real anchor that occurs exactly once'
   // Ids and (test, marker) pairs are unique, so the teardown's bookkeeping
   // cannot be satisfied by an unrelated entry.
   expect(new Set(MUTATIONS.map((m) => m.id)).size).toBe(MUTATIONS.length);
+});
+
+test('a failing or altered fixture retires its predecessor’s assessment', async ({ page }) => {
+  await page.goto('.');
+  await selectFixture(page, 'inm-clean');
+  await openAct(page, /Assess Min-Entropy/);
+  await expect(page.locator('#assess-body')).toContainText('0.372625');
+  for (const [id, status] of [['counter-hash-sha256', 503], ['fault-bias', 200]] as const) {
+    await page.route('**/fixtures/' + id + '.bin', route =>
+      route.fulfill({ status, body: Buffer.alloc(125000), contentType: 'application/octet-stream' }));
+    await openAct(page, /Inspect Raw Samples/);
+    await page.selectOption('#sample-select', id);
+    await expect(page.locator('[data-verdict="fixture-fetch-failed"]')).toBeVisible();
+    await expect(page.locator('#sample-dossier')).toBeEmpty();
+    await openAct(page, /Assess Min-Entropy/);
+    await expect(page.locator('#assess-body')).toContainText('Choose a sample');
+  }
+});
+
+test('a delayed fixture cannot replace a later selection', async ({ page }) => {
+  await page.addInitScript(() => {
+    const digest = crypto.subtle.digest.bind(crypto.subtle);
+    (window as unknown as { completedDigests: number }).completedDigests = 0;
+    crypto.subtle.digest = async (...args) => {
+      const result = await digest(...args);
+      (window as unknown as { completedDigests: number }).completedDigests++;
+      return result;
+    };
+  });
+  await page.goto('.');
+  await selectFixture(page, 'inm-clean');
+  let finish!: () => void;
+  const delayed = new Promise<void>(resolve => { finish = resolve; });
+  await page.route('**/fixtures/fault-bias.bin', async route => {
+    await delayed;
+    await route.continue();
+  });
+  const pending = page.waitForRequest('**/fixtures/fault-bias.bin');
+  await page.selectOption('#sample-select', 'fault-bias');
+  await pending;
+  await selectFixture(page, 'counter-hash-sha256');
+  const completed = await page.evaluate(() => (window as unknown as { completedDigests: number }).completedDigests);
+  const received = page.waitForResponse('**/fixtures/fault-bias.bin');
+  finish();
+  await (await received).finished();
+  await page.waitForFunction(n => (window as unknown as { completedDigests: number }).completedDigests > n, completed);
+  await openAct(page, /Assess Min-Entropy/);
+  await expect(page.locator('#assess-body')).toContainText('0.919220');
+});
+
+test('short sample Pearson correlations use the actual lagged pairs', async ({ page }) => {
+  await boot(page);
+  await selectFixture(page, 'counter-hash-sha256');
+  for (const [bytes, expected] of [[[0, 1, 2], '1.00000'], [[1, 1, 2], 'undefined']] as const) {
+    await page.locator('#sample-file').setInputFiles({ name: 'three-samples.bin', mimeType: 'application/octet-stream', buffer: Buffer.from(bytes) });
+    await expect(page.locator('[data-claim="autocorr-1"]')).toHaveText(expected);
+  }
+});
+
+test('counter regeneration refuses a substituted reference fixture', async ({ page }) => {
+  await boot(page);
+  await openAct(page, /Follow Conditioning/);
+  await page.route('**/fixtures/counter-hash-sha256.bin', route => route.fulfill({
+    status: 200, body: Buffer.alloc(1000000), contentType: 'application/octet-stream',
+  }));
+  await page.click('#regen-run');
+  await expect(page.locator('[data-verdict="regenerated-mismatch"]')).toBeVisible();
+  await expect(page.locator('[data-verdict="regenerated-match"]')).toHaveCount(0);
+});
+
+test('cancelling retires the worker immediately and permits a fresh analysis', async ({ page }) => {
+  await boot(page);
+  await selectFixture(page, 'counter-hash-sha256');
+  // Dispatch both actions in one browser task, before a queued worker result
+  // can run. The old cooperative cancel message could never stop its loop.
+  await page.evaluate(() => {
+    (document.querySelector('#analyse-run') as HTMLButtonElement).click();
+    (document.querySelector('#analyse-cancel') as HTMLButtonElement).click();
+  });
+  await expect(page.locator('#analyse-live')).toContainText('Analysis cancelled');
+  await expect(page.locator('#sample-stats')).toBeEmpty();
+  await expect(page.locator('#analyse-run')).toBeEnabled();
+  await page.click('#analyse-run');
+  await expect(page.locator('[data-claim="descriptive-table"]')).toBeVisible();
+});
+
+test('public pad verdicts follow valid lengths, current messages and the UTF-8 overlap', async ({ page }) => {
+  await boot(page);
+  await openAct(page, /One-Time Pad/);
+  await page.fill('#pad-message', 'café 🙏');
+  await page.click('#pad-run');
+  await expect(page.locator('[data-claim="pad-recovered"]')).toHaveText('café 🙏');
+  await page.fill('#pad-message', 'a new note');
+  await expect(page.locator('#pad-out')).toBeEmpty();
+  for (const length of ['', '-1', '1.5', '257']) {
+    await page.fill('#pad-length', length);
+    await page.click('#pad-run');
+    await expect(page.locator('[data-verdict="pad-invalid-length"]')).toBeVisible();
+    await expect(page.locator('[data-claim="pad-recovered"]')).toHaveCount(0);
+  }
+  await page.fill('#reuse-m1', 'abc');
+  await page.fill('#reuse-m2', 'abcdef');
+  await page.click('#reuse-run');
+  await expect(page.locator('#reuse-out')).toContainText('3 overlapping UTF-8 bytes');
+  await page.fill('#reuse-m1', '');
+  await expect(page.locator('#reuse-out')).toBeEmpty();
+  await page.click('#reuse-run');
+  await expect(page.locator('#reuse-out')).toContainText('empty overlap');
+  await expect(page.locator('[data-verdict="two-time-pad-leak"]')).toHaveCount(0);
+});
+
+test('editing during public-pad hashing retires both pending demonstrations', async ({ page }) => {
+  await boot(page);
+  await openAct(page, /One-Time Pad/);
+  await page.evaluate(async () => {
+    const digest = crypto.subtle.digest.bind(crypto.subtle);
+    const releases: Array<() => void> = [];
+    crypto.subtle.digest = async (...args) => {
+      await new Promise<void>(resolve => releases.push(resolve));
+      return digest(...args);
+    };
+    (document.querySelector('#pad-run') as HTMLButtonElement).click();
+    (document.querySelector('#reuse-run') as HTMLButtonElement).click();
+    for (const id of ['#pad-message', '#reuse-m1']) {
+      const input = document.querySelector(id) as HTMLTextAreaElement;
+      input.value = 'changed while hashing'; input.dispatchEvent(new Event('input'));
+    }
+    crypto.subtle.digest = digest;
+    releases.forEach(release => release());
+    // A real WebCrypto completion gives the interrupted callbacks their turn.
+    await digest('SHA-256', new Uint8Array());
+  });
+  await expect(page.locator('#pad-out')).toBeEmpty();
+  await expect(page.locator('#reuse-out')).toBeEmpty();
 });

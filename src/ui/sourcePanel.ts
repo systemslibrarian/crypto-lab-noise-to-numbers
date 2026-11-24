@@ -43,7 +43,7 @@ export function renderSourcePanel(root: HTMLElement, manifest: Manifest): void {
         'A cryptographic key has to be a number nobody can guess. Software alone cannot make one: ' +
           'a program that starts from the same state takes the same steps, so what comes out is ' +
           'only as unguessable as what went in. So the unguessability has to come from somewhere ' +
-          'physical — in this lab, from thermal noise, the tiny random jostling of electrons ' +
+          'physical — in the hardware design, from thermal noise, the tiny random jostling of electrons ' +
           'that every resistor produces and nobody can predict.'
       ),
       el(
@@ -205,7 +205,7 @@ export function renderSourcePanel(root: HTMLElement, manifest: Manifest): void {
 
   const grid = el('div', { class: 'figure-grid' });
   grid.append(
-    figure('Theoretical design rate', `${designRate.toFixed(6)} / 1`, UNIT_PER_BIT, {
+    figure('Theoretical design rate', `${designRate.toFixed(6)} / 1`, 'bits/bit — vendor claim, not assessed min-entropy', {
       claim: 'design-rate',
     })
   );
@@ -223,7 +223,7 @@ export function renderSourcePanel(root: HTMLElement, manifest: Manifest): void {
     figure(
       'The driver’s own ceiling',
       `${driverEntropyCeilingBits(INM_K).toFixed(3)}`,
-      `bits of min-entropy claimed per ${BUFLEN}-bit block`,
+      `bits per ${BUFLEN}-bit block — driver allowance, not assessed min-entropy`,
       { claim: 'driver-ceiling' }
     )
   );

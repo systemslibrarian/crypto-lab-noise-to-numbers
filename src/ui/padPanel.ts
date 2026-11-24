@@ -45,10 +45,9 @@ export function renderPadPanel(root: HTMLElement): void {
       el(
         'p',
         {},
-        'The one-time pad is the only cipher with a proof of perfect secrecy, and the proof comes ' +
-          'with three conditions: the pad is ',
+        'The one-time pad can achieve perfect secrecy when the pad is ',
         el('strong', {}, 'uniformly random'),
-        ', at least as ',
+        ', independent of the message, kept secret, at least as ',
         el('strong', {}, 'long'),
         ' as the message, and used exactly ',
         el('strong', {}, 'once'),
@@ -86,8 +85,9 @@ export function renderPadPanel(root: HTMLElement): void {
       'p',
       {},
       'The pad below is generated from this lab’s own published counter-hash construction. ' +
-        'It is uniformly distributed, it passes every descriptive statistic in Act 2, and it was ' +
+        'Its sample looks balanced under the descriptive checks in Act 2, and it was ' +
         'assessed at a high min-entropy figure in Act 5. It is also printed in this repository. ' +
+        'It is a fixed, predictable sequence, not a uniformly random secret key. ' +
         'Encrypt something with it and then decrypt it — without being told any secret.'
     )
   );
@@ -109,17 +109,29 @@ export function renderPadPanel(root: HTMLElement): void {
   }) as HTMLInputElement;
 
   const out = el('div', { id: 'pad-out', role: 'status', 'aria-live': 'polite' });
+  let padRun = 0;
+  const retirePad = (): void => { padRun++; clear(out); };
+  msgInput.addEventListener('input', retirePad);
+  padLenInput.addEventListener('input', retirePad);
 
   const run = (): void => {
+    const request = ++padRun;
+    clear(out);
     void (async (): Promise<void> => {
       const msg = enc.encode(msgInput.value);
       const want = Number(padLenInput.value);
-      const padLen = Number.isFinite(want) && want >= 0 ? Math.floor(want) : 0;
+      if (padLenInput.value.trim() === '' || !Number.isInteger(want) || want < 0 || want > 256) {
+        out.append(el('p', { class: 'verdict verdict-bad', 'data-verdict': 'pad-invalid-length' },
+          'Enter a whole number of pad bytes from 0 to 256.'));
+        return;
+      }
+      const padLen = want;
 
       // The pad: the published construction again, so it is public by design.
       const pad = new Uint8Array(padLen);
       for (let o = 0; o < padLen; o += 32) {
         const block = await webcryptoSha256(le64(o / 32));
+        if (request !== padRun) return;
         pad.set(block.subarray(0, Math.min(32, padLen - o)), o);
       }
 
@@ -139,8 +151,9 @@ export function renderPadPanel(root: HTMLElement): void {
               { class: 'verdict-text' },
               el('strong', {}, 'Pad too short. '),
               `The pad is ${count(padLen)} bytes and the message is ${count(msg.length)}. The ` +
-                `last ${count(msg.length - padLen)} bytes have nothing to XOR against, so they ` +
-                'would go out in the clear. There is no "mostly encrypted".'
+                `last ${count(msg.length - padLen)} bytes have nothing to XOR against. ` +
+                'This illustration leaves that tail in the clear to show the failure; a real ' +
+                'implementation must refuse to encrypt with an insufficient pad.'
             )
           ),
           el('h4', {}, 'What would actually go on the wire'),
@@ -165,7 +178,7 @@ export function renderPadPanel(root: HTMLElement): void {
         el(
           'pre',
           { class: 'hex', tabindex: '0', role: 'region', 'aria-label': 'Recovered plaintext', 'data-claim': 'pad-recovered' },
-          printable(recovered)
+          new TextDecoder().decode(recovered)
         ),
         el(
           'div',
@@ -182,7 +195,10 @@ export function renderPadPanel(root: HTMLElement): void {
           )
         )
       );
-    })();
+    })().catch(() => {
+      if (request !== padRun) return;
+      out.replaceChildren(el('p', { class: 'verdict verdict-bad' }, 'Could not compute the public pad. No encryption result is shown.'));
+    });
   };
 
   const runBtn = el('button', { class: 'btn btn-primary', type: 'button', id: 'pad-run' }, 'Encrypt, then decrypt');
@@ -209,14 +225,25 @@ export function renderPadPanel(root: HTMLElement): void {
   m2.value = 'retreat at dusk';
 
   const reuseBtn = el('button', { class: 'btn btn-primary', type: 'button', id: 'reuse-run' }, 'Reuse the pad once');
+  let reuseRun = 0;
+  const retireReuse = (): void => { reuseRun++; clear(reuseOut); };
+  m1.addEventListener('input', retireReuse);
+  m2.addEventListener('input', retireReuse);
   reuseBtn.addEventListener('click', () => {
+    const request = ++reuseRun;
+    clear(reuseOut);
     void (async (): Promise<void> => {
       const a = enc.encode(m1.value);
       const b = enc.encode(m2.value);
       const n = Math.min(a.length, b.length);
+      if (n === 0) {
+        reuseOut.append(el('p', { class: 'verdict verdict-warn' }, 'Enter both messages; an empty overlap provides no bytes to compare.'));
+        return;
+      }
       const pad = new Uint8Array(n);
       for (let o = 0; o < n; o += 32) {
         const block = await webcryptoSha256(le64(1000 + o / 32));
+        if (request !== reuseRun) return;
         pad.set(block.subarray(0, Math.min(32, n - o)), o);
       }
       const c1 = xor(a.subarray(0, n), pad);
@@ -226,6 +253,7 @@ export function renderPadPanel(root: HTMLElement): void {
 
       clear(reuseOut);
       reuseOut.append(
+        el('p', {}, `Showing the first ${count(n)} overlapping UTF-8 bytes. Any longer message’s remaining bytes are outside this comparison.`),
         el('h4', {}, 'The two ciphertexts'),
         el(
           'pre',
@@ -254,12 +282,15 @@ export function renderPadPanel(root: HTMLElement): void {
             ),
             'The pad is gone from the result, so what is left is a relationship between the two ' +
               'plaintexts — with no key involved at all. Given a guess at either message, the ' +
-              'other falls out. The entropy of the pad was perfectly adequate; using it twice ' +
-              'made it irrelevant.'
+              'other falls out over the overlap. The cancellation holds even for a perfect ' +
+              'secret pad. This demonstration uses a public pad, so it already has no secrecy.'
           )
         )
       );
-    })();
+    })().catch(() => {
+      if (request !== reuseRun) return;
+      reuseOut.replaceChildren(el('p', { class: 'verdict verdict-bad' }, 'Could not compute the public pad. No reuse result is shown.'));
+    });
   });
 
   reuse.append(
